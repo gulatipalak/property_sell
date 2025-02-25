@@ -1,0 +1,5 @@
+.auth-bg-image {
+    background-image: url('././src/assets/img/auth-bg-img.jpg'); /* Update path as needed */
+    background-size: cover;
+    background-position: center;
+}
