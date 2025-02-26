@@ -1,5 +1,5 @@
 import "./auth.css";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {Eye, EyeOff} from "lucide-react";
 import { useEffect, useState } from "react";
 import {ToastContainer ,toast} from "react-toastify";
@@ -7,7 +7,7 @@ import { useLocation } from "react-router-dom";
 
 const Signup = () => {
     const [formData,setFormData] = useState({
-        full_name: '',
+        username: '',
         email: '',
         password: '',
         confirm_password: '',
@@ -20,6 +20,7 @@ const Signup = () => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const [isTenant, setIsTenant] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
     
     // useEffect(() => {
     //     if (location.pathname.includes("tenant")){
@@ -30,6 +31,7 @@ const Signup = () => {
     //         setIsTenant(false);
     //     }
     // }, [location.pathname]);
+
     useEffect(() => {
         setFormData(prevFormData => ({
             ...prevFormData,
@@ -45,38 +47,63 @@ const Signup = () => {
         [e.target.name]:e.target.value,
     })};
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
 
-        if (!formData.full_name || !formData.email || !formData.password || !formData.confirm_password) {
-            setLoading(false);
+        if (!formData.username || !formData.email || !formData.password || !formData.confirm_password) {
             toast.error("Please fill all the fields");
-           // setTimeout(() => setLoading(false),5000);
+            setLoading(false);
             return;
         }
 
-        if (!(formData.password === formData.confirm_password)) {
+        if (formData.password !== formData.confirm_password) {
             toast.error("Password and Confirm password should be same");
-            setTimeout(() => setLoading(false),5000);
+            setLoading(false);
             return;
         }
 
         if(!emailPattern.test(formData.email)){
             toast.error("Please enter a valid email address");
-            setTimeout(()=>setLoading(false),5000);
+            setLoading(false);
             return;
         }
 
         if(!isTenant && !formData.license_number) {
             toast.error("License number is required for landlords");
-            setTimeout(() => setLoading(false),5000);
+            setLoading(false);
             return;
         }
 
-        alert(JSON.stringify(formData));
+        try {
+            const response = await fetch("http://localhost:6700/api/v1/user/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if(response.ok) {
+                toast.success(data.message || "Signup Successful!");
+                console.log("Response Data: ", data);
+                setTimeout(() => navigate("/verify-email"),5000);
+            } else {
+                toast.error(data.message || "Signup failed!");
+            }
+
+        } catch (error) {
+            console.error("Error:", error);
+            toast.error("Something went wrong. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+
+        // alert(JSON.stringify(formData));
     };
-    console.log(formData);
+    //console.log(formData);
     return (
         <>
             <ToastContainer/>
@@ -90,8 +117,8 @@ const Signup = () => {
                         type="text"
                         className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Enter your full name"
-                        name="full_name"
-                        value={formData.full_name}
+                        name="username"
+                        value={formData.username}
                         onChange={handleChange}
                         />
                     </div>
