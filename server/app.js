@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 //Middlewares
-app.use(express.json())//Parse json bodies also we don't need body-parser 
+app.use(express.json())//Parse json bodies -  we don't need body-parser 
 app.use(cors()) //Enable cors
 app.use(express.urlencoded({extended:true}))
 require("./db/db")
