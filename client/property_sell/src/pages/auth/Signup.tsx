@@ -12,7 +12,7 @@ const Signup = () => {
         password: '',
         confirm_password: '',
         license_number: '',
-        user_type: ''
+        role: ''
     });
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -23,17 +23,17 @@ const Signup = () => {
     
     // useEffect(() => {
     //     if (location.pathname.includes("tenant")){
-    //         setFormData({...formData,user_type: "tenant"});
+    //         setFormData({...formData,role: "tenant"});
     //         setIsTenant(true);
     //     } else if (location.pathname.includes("landlord")){
-    //         setFormData({...formData,user_type: "landlord"});
+    //         setFormData({...formData,role: "landlord"});
     //         setIsTenant(false);
     //     }
     // }, [location.pathname]);
     useEffect(() => {
         setFormData(prevFormData => ({
             ...prevFormData,
-            user_type: location.pathname.includes("tenant") ? "tenant" : "landlord"
+            role: location.pathname.includes("tenant") ? "tenant" : "landlord"
         }));
         setIsTenant(location.pathname.includes("tenant"));
     }, [location.pathname]);
