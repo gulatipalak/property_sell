@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import "./auth.css";
 
 const VerifyEmail = () => {
     return(
