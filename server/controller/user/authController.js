@@ -74,7 +74,7 @@ exports.verifyOTP = async (req,res) => {
         return res.status(400).json({status:false ,code:400 , message:"User not found."});
       }
 
-      if(user.otp.toString() !== otp.toString()){
+      if(user.otp !== otp){
         return res.status(400).json({status:false, code: 400, message:"Incorrect OTP"});
       }
 
@@ -224,7 +224,7 @@ exports.resetPassword = async (req,res) => {
       });
     }
 
-    if (user.otp.toString() !== otp.toString()) {
+    if (user.otp !== otp) {
       return res.status(400).json({
         status: false,
         code: 400,
