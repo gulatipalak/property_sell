@@ -1,42 +1,57 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
-import "./auth.css";
-import { ToastContainer, toast } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { ClipLoader } from "react-spinners";
+import AuthLayout from "../../components/AuthLayout";
+import axios from "axios";
+import { APP_URL } from "../../app_url";
 
 
 
 const ForgetPassword = () => {
-    const [formData, setFormData] = useState(
-        {
-            email : ''
-        }
-    );
+    const [email, setEmail] = useState("");
 
     const [loading,setLoading] = useState(false);
 
-    const emailPattern = /^[a-zA-Z0-9]+([.-][a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$/;
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({ ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
+    const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
 
-        if (!formData.email) {
+        if (!email) {
             toast.error("Please enter your email address");
             setTimeout(()=>setLoading(false),5000);
             return;
         }
 
-        if (!emailPattern.test(formData.email)) {
+        if (!emailPattern.test(email)) {
             toast.error("Please enter valid email address");
             setTimeout(()=>setLoading(false),5000);
             return;
+        }
+
+        try {
+            const response = await axios.post(`${APP_URL}/api/v1/user/forget-password`, {email: email});
+            toast.success(response.data.message || "OTP sent. Please check your email.");
+            setTimeout(()=> navigate("/verify-email",{state: {email: response.data.email, flowType: "forget-password"}}),1000);
+            setLoading(false);
+        } catch (error: unknown) {
+            if(axios.isAxiosError(error)){
+                if(error.response?.status == 200) {
+                    toast.error(error.response?.data.message || "Email doesn't exists. Please try another email");
+                }
+                else {
+                    toast.error(error.response?.data.message || "Failed to send email.");
+                }
+            }
+            else {
+                toast.error("Something went wrong. Please try again later.");
+            }
+            setLoading(false);
         }
     }
 
@@ -45,10 +60,8 @@ const ForgetPassword = () => {
 
     return (
         <>
-        <ToastContainer/>
-        <div className="min-h-screen auth-bg-image flex justify-center items-center">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-[800px] sm:w-[600px]">
-                <h2 className="text-2xl font-bold text-center text-blue-800 mb-6">
+        <AuthLayout>
+        <h2 className="text-2xl font-bold text-center text-blue-800 mb-6">
                 Forget Password
                 </h2>
                 <p className="text-gray-600 text-center mb-4">
@@ -64,14 +77,14 @@ const ForgetPassword = () => {
                             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800"
                             placeholder="Enter your email"
                             name = "email"
-                            value = {formData.email}
-                            onChange={handleChange}
+                            value = {email}
+                            onChange = {(e) => setEmail (e.target.value)}
                         />
                     </div>
 
                     {/* Submit Button */}
                     <button type="submit" className="w-full bg-blue-800 text-white py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-70 disabled:cursor-not-allowed" disabled={loading}>
-                        {loading ? "Sending OTP" : "Send OTP"}
+                        {loading ? <ClipLoader color="#ffffff" size={19}/> : "Send OTP"}
                     </button>
                 </form>
 
@@ -81,8 +94,7 @@ const ForgetPassword = () => {
                         Back to Login
                     </Link>
                 </div>
-            </div>
-        </div>
+        </AuthLayout>
         </>
     )
 }

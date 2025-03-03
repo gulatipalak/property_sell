@@ -6,6 +6,8 @@ import VerifyEmail from "./pages/auth/VerifyEmail";
 import "./App.css";
 import ForgetPassword from "./pages/auth/ForgetPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
+import Dashboard from "./pages/dashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmail/>}/>
         <Route path="/forget-password" element={<ForgetPassword/>}/>
         <Route path="/reset-password" element={<ResetPassword/>}/>
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
       </Routes>
     </Router>
   )

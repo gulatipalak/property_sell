@@ -1,9 +1,12 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import "./auth.css";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
+import AuthLayout from "../../components/AuthLayout";
+import axios from "axios";
+import { APP_URL } from "../../app_url";
+
 
 const ResetPassword = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -14,6 +17,9 @@ const ResetPassword = () => {
     })
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+    const location = useLocation();
+    const email = location.state.email || "No email found";
+    // console.log(email);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData ({
@@ -22,7 +28,7 @@ const ResetPassword = () => {
         });
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);       
         const {password, confirmPassword} = formData;
@@ -38,27 +44,39 @@ const ResetPassword = () => {
             setTimeout(()=>setLoading(false),5000);
             return;
         }
-        
-        toast.success("Password reset successfully!");
-        setTimeout(()=> {
+
+        try {
+            const response = await axios.post(`${APP_URL}/api/v1/user/reset-password`,{email, password});
+            console.log (email);
+            // console.log (response);
+            toast.success(response.data.message || "Password reset successfully! Please login.");
+            setTimeout(()=> {
+                navigate("/login");
+            },3000);
             setLoading(false);
-            navigate("/login");
-        },3000);
+
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error)) {
+                if(error.response?.status == 400) {
+                    toast.error(error.response.data.message || "User not found");
+                }
+            }
+            else {
+                toast.error("Something went wrong. Please try again later.")
+            }
+            setLoading(false);
+        }
     }
 
     return(
         <>
-        <ToastContainer/>
-        <div className="min-h-screen auth-bg-image flex justify-center items-center">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-[800px] sm:w-[600px]">
-                <h2 className="text-2xl font-bold text-center text-blue-800 mb-6">
-                Reset Password
-                </h2>
-                <p className="text-gray-600 text-center mb-4">
-                Enter a new password for your account
-                </p>
+        <AuthLayout>
+            <h2 className="text-2xl font-bold text-center text-blue-800 mb-6">Reset Password</h2>
+            <p className="text-gray-600 text-center mb-4">
+            Enter a new password for your account
+            </p>
 
-                <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
                 {/* New Password Input */}
                 <div className="mb-4">
                 <label className="block text-gray-700 font-medium">New Password</label>
@@ -107,7 +125,7 @@ const ResetPassword = () => {
 
                 {/* Submit Button */}
                 <button type="submit" className="w-full bg-blue-800 text-white py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-70 disabled:cursor-not-allowed" disabled={loading}>
-                    {loading ? "Resetting Password" : "Reset Password"}
+                    {loading ? <ClipLoader color="#ffffff" size={19}/> : "Reset Password"}
                 </button>
                 </form>
 
@@ -117,8 +135,7 @@ const ResetPassword = () => {
                     Back to Login
                 </Link>
                 </div>
-            </div>
-        </div>
+        </AuthLayout>
         </>
     )
 }

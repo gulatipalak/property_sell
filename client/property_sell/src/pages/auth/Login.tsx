@@ -1,9 +1,11 @@
-import "./auth.css";
 import { useState } from "react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {Eye, EyeOff} from "lucide-react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
+import AuthLayout from "../../components/AuthLayout";
+import axios from "axios";
+import { APP_URL } from "../../app_url";
 
 
 const Login = () => {
@@ -14,7 +16,8 @@ const Login = () => {
 
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
-    const emailPattern = /^[a-zA-Z0-9]+([.-][a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$/;
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setFormData({
@@ -23,7 +26,7 @@ const Login = () => {
       });
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       setLoading(true);
@@ -46,17 +49,33 @@ const Login = () => {
         return;
       }
 
-      //alert(JSON.stringify(formData));
-    }
+      try {
+        const response = await axios.post(`${APP_URL}/api/v1/user/login`,formData);
+        localStorage.setItem("token",response.data.token);
+        navigate("/dashboard");
+        setLoading(false);
 
-    //console.log(formData);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)){
+          if(error.response?.data.code == 400) {
+            toast.error(error.response.data.message || "Invalid Credentials.");
+          }
+          else if(error.response?.data.code == 'EMAIL_NOT_VERIFIED') {
+            toast.success(error.response.data.message || "Verify Your email.");
+            navigate("/verify-email",{ state: { email: error.response.data.email }});
+          }
+        }
+        else {
+          toast.error("Invalid Credentials");
+        }
+        setLoading(false);
+      }
+    }
 
     return (
       <>
-        <ToastContainer/>
-        <div className="min-h-screen auth-bg-image flex justify-center items-center flex-wrap">
-          <div className="bg-white p-8 rounded-lg shadow-lg w-[800px] sm:w-[600px]">
-              <h2 className="text-2xl font-bold text-center text-blue-800 mb-6">Login</h2>
+       <AuthLayout>
+       <h2 className="text-2xl font-bold text-center text-blue-800 mb-6">Login</h2>
               <form onSubmit={handleSubmit} method="post">
                   <div className="mb-4">
                       <label className="block text-gray-700 font-medium">Email</label>
@@ -90,7 +109,7 @@ const Login = () => {
                       </div>
                   </div>
                   <button type="submit" className="w-full bg-blue-800 text-white py-2 hover:bg-blue-700 transition rounded-sm disabled:opacity-70 disabled:cursor-not-allowed" disabled={loading}>
-                     {loading ? "Logging you in .." : "Login"} 
+                     {loading ? <ClipLoader color="#ffffff" size={19}/> : "Login"} 
                   </button>
               </form>
               {/* Forgot Password Link */}
@@ -103,8 +122,7 @@ const Login = () => {
                 <Link to="/signup-tenant" className="text-blue-800 font-semibold">Sign up as a Tenant</Link>
                 <Link to="/signup-landlord" className="text-blue-800 font-semibold">Sign up as a Landlord</Link>
               </div>
-          </div>
-        </div>
+       </AuthLayout>
       </>
     );
   };

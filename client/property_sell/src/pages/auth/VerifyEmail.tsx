@@ -1,59 +1,156 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import "./auth.css";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import OTPInput from "react-otp-input";
+import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
+import axios from "axios";
+import { APP_URL } from "../../app_url";
+import AuthLayout from "../../components/AuthLayout";
 
 const VerifyEmail = () => {
+    const [isResendDisabled,setIsResendDisabled] = useState(true);
+    const [timer, setTimer] = useState(30);
+    const [otp, setOtp] = useState("");
+    const [ isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
+    const {email, flowType} = location.state || "";
+    const isNumeric = /^[0-9]+$/
 
-    const [otp, setOtp] = useState(" ");
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsLoading(true);
+
+        if (!otp) {
+            toast.error("Please enter OTP");
+            setIsLoading(false);
+            return;
+        }
+
+        
+        if(!isNumeric.test(otp)){
+            toast.error("Invalid OTP format");
+            setIsLoading(false);
+            return;
+        }
+
+        if (otp.length !== 4) {
+            toast.error("OTP should be 4 digits");
+            setIsLoading(false);
+            return;
+        }
+
+
+        const formData = {
+            email: email,
+            otp: Number(otp)
+        }
+
+
+        try {
+            const response = await axios.post(`${APP_URL}/api/v1/user/verify-otp`, formData);
+            localStorage.setItem("token",response.data.token);
+            toast.success(response.data.message || "OTP Verified Successfully!");
+            if (flowType == "signup"){
+                setTimeout(() => navigate ("/dashboard"), 1000);
+            } else if (flowType == "forget-password"){
+                setTimeout(() => navigate ("/reset-password",{state: {email: response.data.email}}), 1000);
+            }
+            console.log("Response Data: ", response.data);
+
+        } catch (error: unknown) {
+            console.log("Error:", error);
+            if (axios.isAxiosError(error)){
+                if (error.response?.status === 400) {
+                    toast.error(error.response.data.message || "Incorrect OTP");
+                }
+                else {
+                    toast.error(error.response?.data.message || "OTP verification failed!");
+                }
+            } else {
+                toast.error("Failed to verify OTP. Please try again.");
+            }
+            
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        if(timer > 0) {
+            const interval = setInterval(()=> {
+                setTimer((prev) => prev - 1);
+            },1000);
+            return () => clearInterval(interval);
+        }
+        else {
+            setIsResendDisabled(false);
+        }
+    },[timer])
+    const handleResendOTP = async () => {
+        setIsResendDisabled(true);
+        setTimer(30);
+        
+        try {
+            const response = await axios.post(`${APP_URL}/api/v1/user/resend-otp`,{email: email});
+            toast.success(response.data.message || "OTP Resend Successfully!");
+        }
+        catch (error:unknown) {
+            if(axios.isAxiosError(error)) {
+                if (error.response?.status === 400) {
+                    toast.error(error.response.data.message || "User not found");
+                }
+            }
+            else {
+                toast.error("Failed to resend OTP. Please try again after later");
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
     return(
         <>
-        <div className="min-h-screen auth-bg-image flex justify-center items-center flex-wrap">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-[800px] sm:w-[600px]">
-                <h2 className="text-2xl font-bold text-center text-blue-800 mb-6">Verify Email</h2>
+        <AuthLayout>
+        <h2 className="text-2xl font-bold text-center text-blue-800 mb-6">Verify Email</h2>
                 <p className="text-center text-gray-600 mb-4">Enter the 4-digit OTP sent to your email</p>
-                <OTPInput 
-                      value={otp} 
-                      onChange = {setOtp}
-                      numInputs={4}
-                      renderInput = {(props) => <input{...props}/>}
-                      inputStyle={
-                        {
-                            width:"60px",
-                            height:"60px",
-                            margin:"0 10px",
-                            padding:"8px",
-                            border:"1px solid #ccc",
-                            backgroundColor:"#fafafa",
-                            fontSize:"22px",
-                            textAlign:"center",
-                            outline:"none"
-                        }
-                      }
-                    />
-                {/* <form method="post">
-                <div className="flex justify-center space-x-4 mb-4">
-                    <input type="text" className="w-12 h-12 text-center text-xl border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800" maxLength={1} />
-                    <input type="text" className="w-12 h-12 text-center text-xl border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800" maxLength={1} />
-                    <input type="text" className="w-12 h-12 text-center text-xl border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800" maxLength={1} />
-                    <input type="text" className="w-12 h-12 text-center text-xl border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800" maxLength={1} />
-                </div>
-                <button type="submit" className="w-full bg-blue-800 text-white py-2 hover:bg-blue-700 transition rounded-sm">
-                    Verify OTP
-                </button>
-                </form> */}
-                {/* Resend OTP & Back to Login */}
+                <form onSubmit={handleSubmit} method="post">
+                    <div className="flex justify-center">
+                        <OTPInput 
+                            value={otp} 
+                            onChange = {setOtp}
+                            numInputs={4}
+                            renderInput = {(props) => <input{...props}/>}
+                            // shouldAutoFocus = {true}
+                            inputStyle={
+                                {
+                                    width:"60px",
+                                    height:"60px",
+                                    margin:"0 10px",
+                                    padding:"8px",
+                                    border:"1px solid #ccc",
+                                    backgroundColor:"#fafafa",
+                                    fontSize:"22px",
+                                    textAlign:"center",
+                                    outline:"none"
+                                }
+                            }
+                            
+                            />
+                    </div>
+                    <button type="submit" className="w-full bg-blue-800 text-white py-2 hover:bg-blue-700 transition rounded-sm mt-4 disabled:opacity-70 disabled:cursor-not-allowed" disabled={isLoading}>
+                        {isLoading ? <ClipLoader color="#ffffff" size={19}/> : "Verify OTP" }
+                    </button>
+                </form>
                 <div className="flex justify-between mt-4">
-                    <button className="text-blue-800 font-semibold">
-                        Resend OTP
+                    <button className="text-blue-800 font-semibold disabled:cursor-not-allowed disabled:opacity-50" disabled={isResendDisabled} onClick={handleResendOTP}>
+                        {isResendDisabled ? `Resend OTP in ${timer}s` : "Resend OTP"}
                     </button>
                     <Link to="/login" className="text-blue-800 font-semibold">
                         Back to Login
                     </Link>
                 </div>
-            </div>
-        </div>
+        </AuthLayout>
         </>
     );
 }
