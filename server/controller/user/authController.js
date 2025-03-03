@@ -58,6 +58,8 @@ exports.userSignup = async (req, res) => {
       status: true,
       code: 201,
       message: "Signup successful. OTP sent to your email.",
+      email,
+      role
     });
   } catch (error) {
     console.error("Signup Error:", error);
@@ -67,6 +69,7 @@ exports.userSignup = async (req, res) => {
 
 exports.verifyOTP = async (req,res) => {
   const {email, otp} = req.body;
+    // console.log (req.body);
     try {
       const user = await userModel.findOne({email});
 
@@ -78,9 +81,21 @@ exports.verifyOTP = async (req,res) => {
         return res.status(400).json({status:false, code: 400, message:"Incorrect OTP"});
       }
 
-      await userModel.updateOne({email},{$unset:{ otp: 1,}});
+      await userModel.updateOne({email},{$set:{ otp: 1 }});
 
-      return res.status(200).json({ status: true, code: 200, message: "OTP Verified Successfully!" });
+      const token = jwt.sign(
+        {id:user._id, email: user.email, role: user.role},
+        process.env.JWT_SECRET,
+        {expiresIn: "7d"}
+      );
+
+      return res.status(200).json({ 
+      status: true, 
+      code: 200, 
+      message: "OTP Verified Successfully!",
+      token,
+      email
+    });
 
     } catch(error){
       console.log("Verify OTP Error: ", error);
@@ -90,6 +105,7 @@ exports.verifyOTP = async (req,res) => {
 
 exports.resendOTP = async (req,res) => {
    const {email} = req.body;
+  //  console.log (req.body);
    try {
     const user =await userModel.findOne({email});
 
@@ -105,19 +121,14 @@ exports.resendOTP = async (req,res) => {
 
     try {
       await sendEmail(email, subject ,text, html);
-      res.status(200).json({ status: true, code: 200, message: "OTP resent successfully. Please check your email." });
+      return res.status(200).json({ status: true, code: 200, message: "OTP resent successfully. Please check your email." });
     } catch(emailError) {
       console.log("Email sending failed:", emailError);
-      res.status(500).json({ status: false, code: 500, message: "OTP resend failed. Try again later." });
+      return res.status(500).json({ status: false, code: 500, message: "OTP resend failed. Try again later." });
     }
 
-    res.status(201).json({
-      status: true,
-      code: 200,
-      message: "Resent OTP Successfully"
-    });
    } catch (error) {
-    console.log("Resend OTP Error: ", error);
+      console.log("Resend OTP Error: ", error);
      return res.status(500).json({status: false, code: 500, message:"Internal Server Error"});
    }
 };
@@ -137,6 +148,10 @@ exports.login = async (req,res) => {
       return res.status(400).json({status: false, code: 400, message:"Invalid Credentials"});
     }
 
+    if(user.otp !== 1) {
+      return res.status(400).json({status: false, code: 'EMAIL_NOT_VERIFIED', message: "Access Denied: Verify Your Email.",email});
+    }
+
     const token = jwt.sign(
       { id: user._id, email: user.email, role: user.role }, // Payload
       process.env.JWT_SECRET, // Secret Key from .env
@@ -148,12 +163,7 @@ exports.login = async (req,res) => {
       code: 200,
       message: "Login Successful!",
       token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-      },
+      email
     });
   }
   catch(error){
@@ -189,7 +199,8 @@ exports.forgetPassword = async (req,res) => {
         return res.status(200).json({
           status: true,
           code: 200,
-          message: "OTP sent. Please check your email."
+          message: "OTP sent. Please check your email.",
+          email
         });
       } catch (error) {
         return res.status(500).json({
@@ -211,7 +222,7 @@ exports.forgetPassword = async (req,res) => {
 };
 
 exports.resetPassword = async (req,res) => {
-  const {email,password,otp} = req.body;
+  const {email,password} = req.body;
 
   try{
     const user = await userModel.findOne({email});
@@ -224,14 +235,6 @@ exports.resetPassword = async (req,res) => {
       });
     }
 
-    if (user.otp !== otp) {
-      return res.status(400).json({
-        status: false,
-        code: 400,
-        message: "Invalid OTP. Please verify OTP again."
-      });
-    }
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password,salt);
 
@@ -240,7 +243,7 @@ exports.resetPassword = async (req,res) => {
     return res.status(200).json({
       status: true,
       code: 200,
-      message: "Password reset successfully!"
+      message: "Password reset successfully! Please login."
     });
 
   }catch (error) {
