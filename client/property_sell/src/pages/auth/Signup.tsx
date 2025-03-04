@@ -6,6 +6,7 @@ import { useLocation } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
 import { APP_URL } from "../../app_url";
 import AuthLayout from "../../components/AuthLayout";
+import ReactPasswordChecklist from "react-password-checklist";
 
 const Signup = () => {
     const [formData,setFormData] = useState({
@@ -103,9 +104,8 @@ const Signup = () => {
             setLoading(false);
         }
 
-        // alert(JSON.stringify(formData));
     };
-    //console.log(formData);
+
     return (
         <>
             <AuthLayout>
@@ -188,6 +188,12 @@ const Signup = () => {
                     </button>
                     </div>
                 </div>
+                <ReactPasswordChecklist 
+                    rules={["minLength","specialChar","number","capital","match"]}
+                    minLength={5}
+                    value={formData.password}
+                    valueAgain={formData.confirm_password}
+                />
                 <button type="submit" className="w-full bg-blue-800 text-white py-2 hover:bg-blue-700 transition rounded-md disabled:opacity-70 disabled:cursor-not-allowed" disabled={loading}>
                 {loading ? <ClipLoader color="#ffffff" size={19}/> : "Sign Up"} 
                 </button>
