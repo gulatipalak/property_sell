@@ -8,6 +8,7 @@ router.route("/resend-otp").post(authConroller.resendOTP);
 router.route("/login").post(authConroller.login);
 router.route("/forget-password").post(authConroller.forgetPassword);
 router.route("/reset-password").post(authConroller.resetPassword);
+router.route("/dashboard").get(authConroller.getProfile);
 
 module.exports = router;
 

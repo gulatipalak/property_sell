@@ -256,3 +256,17 @@ exports.resetPassword = async (req,res) => {
   }
 }
 
+exports.getProfile= async (req,res) => {
+    const {id} = req.query;
+
+    const user = await userModel.findById(id).select("-password");
+    const username = user.username
+
+    return res.status(200).json({
+      status: true,
+      code: 200,
+      message: "",
+      data: user,
+    })
+}
+
