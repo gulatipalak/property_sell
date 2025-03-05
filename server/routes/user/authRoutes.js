@@ -1,14 +1,15 @@
 const express = require("express")
 const router= express.Router()
-const authConroller = require("../../controller/user/authController")
+const authController = require("../../controller/user/authController")
+const verifyToken = require("../../middleware/user/verifyToken")
 
-router.route("/signup").post(authConroller.userSignup);
-router.route("/verify-otp").post(authConroller.verifyOTP);
-router.route("/resend-otp").post(authConroller.resendOTP);
-router.route("/login").post(authConroller.login);
-router.route("/forget-password").post(authConroller.forgetPassword);
-router.route("/reset-password").post(authConroller.resetPassword);
-router.route("/dashboard").get(authConroller.getProfile);
+router.route("/signup").post(authController.userSignup);
+router.route("/verify-otp").post(authController.verifyOTP);
+router.route("/resend-otp").post(authController.resendOTP);
+router.route("/login").post(authController.login);
+router.route("/forget-password").post(authController.forgetPassword);
+router.route("/reset-password").post(authController.resetPassword);
+router.route("/get-profile").get(verifyToken,authController.getProfile);
 
 module.exports = router;
 

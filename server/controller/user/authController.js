@@ -257,16 +257,21 @@ exports.resetPassword = async (req,res) => {
 }
 
 exports.getProfile= async (req,res) => {
-    const {id} = req.query;
+  const {id} = req.user;
 
-    const user = await userModel.findById(id).select("-password");
-    const username = user.username
+  try {
+  const user = await userModel.findById(id).select("-password");
 
-    return res.status(200).json({
-      status: true,
-      code: 200,
-      message: "",
-      data: user,
-    })
+  if(!user) return res.status(404).json({status: false, code: 404, message: "User not found."});
+
+  return res.status(200).json({
+    status: true,
+    code: 200,
+    message: "Profile retrieved successfully",
+    data: user,
+  });
+  }catch (error) {
+    return res.status(500).json({status: false, code: 500, message: "Internal Server Error"});
+  }
 }
 
