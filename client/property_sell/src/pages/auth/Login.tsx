@@ -3,7 +3,7 @@ import {Link, useNavigate} from "react-router-dom";
 import {Eye, EyeOff} from "lucide-react";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
-import AuthLayout from "../../components/AuthLayout";
+import AuthLayout from "../../layouts/AuthLayout";
 import axios from "axios";
 import { APP_URL } from "../../app_url";
 

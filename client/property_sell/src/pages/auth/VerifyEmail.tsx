@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import axios from "axios";
 import { APP_URL } from "../../app_url";
-import AuthLayout from "../../components/AuthLayout";
+import AuthLayout from "../../layouts/AuthLayout";
 
 const VerifyEmail = () => {
     const [isResendDisabled,setIsResendDisabled] = useState(true);
