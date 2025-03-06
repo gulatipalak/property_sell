@@ -2,14 +2,14 @@ const propertyModel = require("../../model/user/propertyModel");
 
 exports.addProperty = async (req,res) => {
     try {
-        const {property_name,postingFor,price,type,location} = req.body;
+        const {property_name, postingFor, price, type, location , area, bedrooms, bathrooms, contact, amenities, furnished} = req.body;
         const user = req.user
-        console.log(user,"user")
+        // console.log(user,"user")
 
-        if(!property_name || !postingFor || !price) {
-            return res.status(400).json({status: false, code: 400, message: "Please fill all required fields"});
+        if(!property_name || !postingFor || !area || !price || !contact) {
+            return res.status(400).json({status: false, code: 400, message: "Please Fill All Required Fields"});
         }
-        console.log("userId",user.id)
+        // console.log("userId",user.id)
 
         const newProperty = new propertyModel({
             userId:user.id,
@@ -18,12 +18,18 @@ exports.addProperty = async (req,res) => {
             type,
             location,
             price,
+            area, 
+            bedrooms, 
+            bathrooms, 
+            contact, 
+            amenities, 
+            furnished
         });
 
-        console.log(newProperty,"new")
+        // console.log(newProperty,"new")
 
         await newProperty.save();
-        return res.status(200).json({status: true, code: 200, message: "Property added successfully!"});
+        return res.status(200).json({status: true, code: 200, message: "Property Added Successfully!"});
     }
     catch (error) {
         return res.status(500).json({status: false, code: 500, message: "Internal Server Error:",error});

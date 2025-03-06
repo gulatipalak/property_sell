@@ -3,3 +3,7 @@
 #root {
     @apply bg-blue-800;
 }
+
+body {
+    overflow-y: hidden;
+}

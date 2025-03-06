@@ -79,7 +79,7 @@ const ResetPassword = () => {
             <form onSubmit={handleSubmit}>
                 {/* New Password Input */}
                 <div className="mb-4">
-                <label className="block text-gray-700 font-medium">New Password</label>
+                <label className="block text-gray-700 font-medium">New Password <span className="text-red-500">*</span></label>
                 <div className="relative">
                 <input
                     type={showPassword ? "text" : "password"}
@@ -101,7 +101,7 @@ const ResetPassword = () => {
 
                 {/* Confirm Password Input */}
                 <div className="mb-4">
-                <label className="block text-gray-700 font-medium">Confirm Password</label>
+                <label className="block text-gray-700 font-medium">Confirm Password <span className="text-red-500">*</span></label>
                 <div className="relative">
                     <input
                         type= {showConfirmPassword ? "text" : "password"}

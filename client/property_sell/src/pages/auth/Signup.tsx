@@ -112,7 +112,7 @@ const Signup = () => {
             <h2 className="text-2xl font-bold text-center text-blue-800 mb-6">Sign up as { isTenant ? "tenant" : "landlord"}</h2>
                 <form onSubmit={handleSubmit} method="post">
                 <div className="mb-4">
-                    <label className="block text-gray-700 font-medium">Full Name</label>
+                    <label className="block text-gray-700 font-medium">Full Name <span className="text-red-500">*</span></label>
                     <input
                     type="text"
                     className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -123,7 +123,7 @@ const Signup = () => {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-700 font-medium">Email</label>
+                    <label className="block text-gray-700 font-medium">Email <span className="text-red-500">*</span></label>
                     <input
                     type="email"
                     className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -147,7 +147,7 @@ const Signup = () => {
                 </div>
                 }
                 <div className="mb-4">
-                    <label className="block text-gray-700 font-medium">Password</label>
+                    <label className="block text-gray-700 font-medium">Password <span className="text-red-500">*</span></label>
                     <div className="relative">
                     <input
                     type={showPassword ? "text" : "password"}
@@ -168,7 +168,7 @@ const Signup = () => {
                     </div>
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-700 font-medium">Confirm Password</label>
+                    <label className="block text-gray-700 font-medium">Confirm Password <span className="text-red-500">*</span></label>
                     <div className="relative">
                     <input
                     type={showConfirmPassword ? "text" : "password"}

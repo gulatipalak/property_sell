@@ -50,6 +50,7 @@ const VerifyEmail = () => {
         try {
             const response = await axios.post(`${APP_URL}/api/v1/user/verify-otp`, formData);
             localStorage.setItem("token",response.data.token);
+            localStorage.setItem("role", response.data.role);
             toast.success(response.data.message || "OTP Verified Successfully!");
 
             console.log(response,"response")

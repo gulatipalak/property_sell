@@ -12,7 +12,7 @@ const PanelLayout = ({children}: PanelLayoutProps) => {
             <Sidebar/>
             <div className="flex-1">
                 <Header/>
-                <div className="bg-white h-[calc(100vh-60px)] rounded-tl-[20px] p-[40px]">
+                <div className="bg-white h-[calc(100vh-60px)] overflow-y-auto rounded-tl-[20px] p-[40px]">
                     {children}
                 </div>
             </div>
