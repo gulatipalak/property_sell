@@ -5,6 +5,7 @@ import axios from "axios";
 import { Link,useNavigate} from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmDialog } from "../../components/common/confirm"; 
+import { jwtDecode } from "jwt-decode";
 interface Property {
     _id: string;
     property_name: string;
@@ -81,8 +82,11 @@ const PropertiesList = () => {
         }else {
                 console.log("Deletion Canceled");
         }
-        
     }
+
+    const token = localStorage.getItem("token");
+
+    const user = jwtDecode<{role: string}>(token ?? "");
     return(
         <>
             <PanelLayout>
@@ -116,13 +120,16 @@ const PropertiesList = () => {
                                     <p><strong>Status:</strong> {property.approvalStatus}</p>
                                 </div>
 
-                                <div className="space-x-2 flex">
+                                {user.role === "landlord" ?
+                                    <div className="space-x-2 flex">
                                     <button type="button" 
                                     onClick={()=>navigate(`/property/edit/${property._id}`)} 
                                     className="w-full bg-blue-800 text-white py-2 hover:bg-blue-900 transition rounded-sm mt-4">Edit</button>
 
                                     <button type="button" onClick={() => handleDelete(property._id)} className="w-full bg-red-600 text-white py-2 hover:bg-red-700 transition rounded-sm mt-4">Delete</button>
-                                </div>
+                                </div> : ""
+                                }
+                                
                             </div>
                             ))}
                         </div>

@@ -10,11 +10,13 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AddProperty from "./pages/dashboard/AddProperty";
 import PropertiesList from "./pages/dashboard/PropertiesList";
+import Unauthorized from "./pages/Unauthorized";
 
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/unauthorized" element={<Unauthorized/>}/>
         <Route path="/" element={<Login/>}/>
         <Route path="/login" element={<Login/>}/>
         <Route path="/signup-tenant" element={<Signup/>}/>
@@ -22,10 +24,10 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmail/>}/>
         <Route path="/forget-password" element={<ForgetPassword/>}/>
         <Route path="/reset-password" element={<ResetPassword/>}/>
-        <Route path="/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
-        <Route path="/property/:type" element={<ProtectedRoute><AddProperty/></ProtectedRoute>}/>
-        <Route path="/property/:type/:propertyid" element={<ProtectedRoute><AddProperty/></ProtectedRoute>}/>
-        <Route path="/properties" element={<ProtectedRoute><PropertiesList/></ProtectedRoute>}/>
+        <Route path="/dashboard" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><Dashboard/></ProtectedRoute>}/>
+        <Route path="/property/:type" element={<ProtectedRoute allowedRoles={["landlord"]}><AddProperty/></ProtectedRoute>}/>
+        <Route path="/property/:type/:propertyid" element={<ProtectedRoute allowedRoles={["landlord"]}><AddProperty/></ProtectedRoute>}/>
+        <Route path="/properties" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><PropertiesList/></ProtectedRoute>}/>
       </Routes>
     </Router>
   )
