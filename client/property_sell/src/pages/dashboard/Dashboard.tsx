@@ -27,8 +27,8 @@ const Dashboard = () => {
             <PanelLayout>
                 <div className="flex items-center justify-center h-100">
                     <div className="text-center">
-                        <h2 className="mb-4 font-bold text-blue-900 text-xl">Hey {username}, Welcome to Property Bazaar!</h2>
-                        <Link to="/add-property" className="bg-blue-900 text-white rounded-sm px-7 py-2 inline-block">Add Property</Link>
+                        <h2 className="mb-4 font-bold text-gray-800 text-xl">Hey {username}, Welcome to Property Bazaar!</h2>
+                        <Link to="/property/add" className="bg-blue-800 text-white hover:bg-blue-700 rounded-sm px-7 py-2 inline-block transition-all duration-300">Add Property</Link>
                     </div>
                 </div>
             </PanelLayout>

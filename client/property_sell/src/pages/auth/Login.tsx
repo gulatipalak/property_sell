@@ -6,7 +6,7 @@ import { ClipLoader } from "react-spinners";
 import AuthLayout from "../../layouts/AuthLayout";
 import axios from "axios";
 import { APP_URL } from "../../app_url";
-
+import {requestNotificationPermission} from "../../firebase";
 
 const Login = () => {
     const [formData,setFormData] = useState({
@@ -52,6 +52,7 @@ const Login = () => {
       try {
         const response = await axios.post(`${APP_URL}/api/v1/user/login`,formData);
         localStorage.setItem("token",response.data.token);
+        requestNotificationPermission();
         navigate("/dashboard");
         setLoading(false);
 
@@ -78,7 +79,7 @@ const Login = () => {
        <h2 className="text-2xl font-bold text-center text-blue-800 mb-6">Login</h2>
               <form onSubmit={handleSubmit} method="post">
                   <div className="mb-4">
-                      <label className="block text-gray-700 font-medium">Email</label>
+                      <label className="block text-gray-700 font-medium">Email <span className="text-red-500">*</span></label>
                       <input
                       type="email"
                       className="w-full px-4 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
@@ -89,7 +90,7 @@ const Login = () => {
                       />
                   </div>
                   <div className="mb-4">
-                      <label className="block text-gray-700 font-medium">Password</label>
+                      <label className="block text-gray-700 font-medium">Password <span className="text-red-500">*</span></label>
                       <div className="relative">
                       <input
                       type={showPassword ? "text" : "password"}

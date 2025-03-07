@@ -94,7 +94,8 @@ exports.verifyOTP = async (req,res) => {
       code: 200, 
       message: "OTP Verified Successfully!",
       token,
-      email
+      email,
+      role: user.role,
     });
 
     } catch(error){
@@ -163,7 +164,8 @@ exports.login = async (req,res) => {
       code: 200,
       message: "Login Successful!",
       token,
-      email
+      email,
+      role: user.role
     });
   }
   catch(error){

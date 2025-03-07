@@ -10,14 +10,20 @@ const propertySchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    area: {
+        type: Number,
+        required: true,
+        min: 1
+    },
     postingFor: {
         type: String,
         required: true,
-        enum: ["Sell","Rent"]
+        enum: ["Sell","Rent"],
+        default: "Sell"
     },
     type: {
         type: String,
-        enum: ["Apartment","House","Shop","office"]
+        enum: ["Apartment","House","Shop","Office"]
     },
     location: {
         type: String,
@@ -26,8 +32,30 @@ const propertySchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    contact: {
+        type: String,
+        required: true
+    },
+    bedrooms: {
+        type: Number
+    },
+    bathrooms: {
+        type: Number
+    },
+    furnished: {
+        type: String,
+        enum: ["Fully Furnished", "Semi Furnished", "Unfurnished"]
+    },
+    amenities: {
+        type: [String]
+    },
     image: {
         type: String,
+    },
+    approvalStatus: {
+        type: String,
+        enum: ["Pending","Approved","Rejected"],
+        default: "Pending"
     }
 
 },{timestamps: true});

@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const landlordController = require("../../controller/user/landlordController");
+const propertyController = require("../../controller/user/propertyController");
 const verifyToken = require("../../middleware/user/verifyToken")
 
-router.route("/add-property").post(verifyToken,landlordController.addProperty);
-router.route("/get-properties").get(verifyToken,landlordController.getMyProperties)
+router.route("/add-property").post(verifyToken,propertyController.addProperty);
+router.route("/get-properties").get(verifyToken,propertyController.getMyProperties);
+router.route("/delete-property/:id").delete(verifyToken,propertyController.deleteProperty);
 
 module.exports = router;
 

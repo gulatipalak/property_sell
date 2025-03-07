@@ -50,6 +50,7 @@ const VerifyEmail = () => {
         try {
             const response = await axios.post(`${APP_URL}/api/v1/user/verify-otp`, formData);
             localStorage.setItem("token",response.data.token);
+            localStorage.setItem("role", response.data.role);
             toast.success(response.data.message || "OTP Verified Successfully!");
 
             console.log(response,"response")
@@ -145,7 +146,7 @@ const VerifyEmail = () => {
                     </button>
                 </form>
                 <div className="flex justify-between mt-4">
-                    <button className="text-blue-800 font-semibold disabled:cursor-not-allowed disabled:opacity-50" disabled={isResendDisabled} onClick={handleResendOTP}>
+                    <button className="text-blue-800 font-semibold hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50" disabled={isResendDisabled} onClick={handleResendOTP}>
                         {isResendDisabled ? `Resend OTP in ${timer}s` : "Resend OTP"}
                     </button>
                     <Link to="/login" className="text-blue-800 font-semibold">
