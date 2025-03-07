@@ -6,7 +6,7 @@ import { ClipLoader } from "react-spinners";
 import AuthLayout from "../../layouts/AuthLayout";
 import axios from "axios";
 import { APP_URL } from "../../app_url";
-
+import {requestNotificationPermission} from "../../firebase";
 
 const Login = () => {
     const [formData,setFormData] = useState({
@@ -52,6 +52,7 @@ const Login = () => {
       try {
         const response = await axios.post(`${APP_URL}/api/v1/user/login`,formData);
         localStorage.setItem("token",response.data.token);
+        requestNotificationPermission();
         navigate("/dashboard");
         setLoading(false);
 
