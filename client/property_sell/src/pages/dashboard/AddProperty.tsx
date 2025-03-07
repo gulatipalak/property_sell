@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import PanelLayout from "../../layouts/PanelLayout";
 import { ClipLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
@@ -7,14 +8,27 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const AddProperty = () => {
+    const {type,propertyid} = useParams();
+
+    console.log(type,propertyid,"type")
+    //console.log(id,"id")
+
+    const [isEdit, setIsEdit] = useState(false);
+
+    useEffect(()=>{
+        if (type === 'edit') {
+            setIsEdit(true);
+        }
+    },[]);
+
     const [formData, setFormData] = useState({
         property_name: '',
-        postingFor: 'sell',
-        type: '',
+        postingFor: 'Sell',
+        type: 'Apartment',
         area: '',
         bedrooms: '',
         bathrooms: '',
-        furnished: '',
+        furnished: 'Fully Furnished',
         amenities: '',
         contact: '',
         location: '',
@@ -53,7 +67,7 @@ const AddProperty = () => {
             });
             toast.success(response.data.message || "Property Added Sucessfully!");
             setIsLoading(false);
-            navigate("/properties");
+            setTimeout( () => navigate("/properties"),3000);
         }
         catch(error) {
             console.error("Error:", error);
@@ -68,10 +82,10 @@ const AddProperty = () => {
             <ToastContainer/>
             <div className="">
                 <h2 className="text-2xl font-semibold text-blue-800 text-center mb-4">
-                    Add New Property
+                    {type} New Property
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
+                    {isEdit && <div>
                         <label className="block text-gray-700 font-medium">Property Name <span className="text-red-500">*</span></label>
                         <input
                             type="text"
@@ -82,6 +96,8 @@ const AddProperty = () => {
                             placeholder="Enter property name"
                         />
                     </div>
+                    }
+                    
 
                     <div>
                         <label className="block text-gray-700 font-medium">Posting Property For <span className="text-red-500">*</span></label>

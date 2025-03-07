@@ -23,7 +23,8 @@ function App() {
         <Route path="/forget-password" element={<ForgetPassword/>}/>
         <Route path="/reset-password" element={<ResetPassword/>}/>
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
-        <Route path="/add-property" element={<ProtectedRoute><AddProperty/></ProtectedRoute>}/>
+        <Route path="/property/:type" element={<ProtectedRoute><AddProperty/></ProtectedRoute>}/>
+        <Route path="/property/:type/:propertyid" element={<ProtectedRoute><AddProperty/></ProtectedRoute>}/>
         <Route path="/properties" element={<ProtectedRoute><PropertiesList/></ProtectedRoute>}/>
       </Routes>
     </Router>

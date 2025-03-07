@@ -54,8 +54,8 @@ const propertySchema = new mongoose.Schema({
     },
     approvalStatus: {
         type: String,
-        enum: ["pending","approved","rejected"],
-        default: "pending"
+        enum: ["Pending","Approved","Rejected"],
+        default: "Pending"
     }
 
 },{timestamps: true});

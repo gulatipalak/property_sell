@@ -9,7 +9,7 @@ const Header = () => {
         const fetchUser = async () => {
             try {
                 const token = localStorage.getItem("token");
-                console.log(token);
+                // console.log(token);
                 const response = await axios.get(`${APP_URL}/api/v1/user/get-profile`, {
                     headers: {Authorization: `Bearer ${token}`}
                 })

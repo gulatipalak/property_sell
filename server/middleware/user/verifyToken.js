@@ -5,6 +5,8 @@ const verifyToken = (req, res, next) => {
 
     if(!token) return res.status(401).json({status: false, code: 401, message: "Access Denied! No token provided."});
 
+    // console.log(token);
+
     try {
         const verified = jwt.verify(token, process.env.JWT_SECRET);
         req.user = verified;

@@ -146,7 +146,7 @@ const VerifyEmail = () => {
                     </button>
                 </form>
                 <div className="flex justify-between mt-4">
-                    <button className="text-blue-800 font-semibold disabled:cursor-not-allowed disabled:opacity-50" disabled={isResendDisabled} onClick={handleResendOTP}>
+                    <button className="text-blue-800 font-semibold hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50" disabled={isResendDisabled} onClick={handleResendOTP}>
                         {isResendDisabled ? `Resend OTP in ${timer}s` : "Resend OTP"}
                     </button>
                     <Link to="/login" className="text-blue-800 font-semibold">
