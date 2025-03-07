@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import PanelLayout from "../../layouts/PanelLayout";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -9,7 +9,7 @@ import { jwtDecode } from "jwt-decode";
 
 const Dashboard = () => {
     const [username, setUsername] = useState("");
-    const location = useLocation();
+    // const location = useLocation();
     const [showVerifiedSuccessModal, setVerifiedShowSuccessModal] = useState(false);
 
     useEffect(() => {
@@ -29,10 +29,13 @@ const Dashboard = () => {
     },[]);
 
     useEffect(() => {
-        if (location.state?.emailVerified) {
+        const emailVerified = localStorage.getItem("emailVerified");
+    
+        if (emailVerified === "true") {
             setVerifiedShowSuccessModal(true);
+            localStorage.removeItem("emailVerified"); // Remove it to prevent running on refresh
         }
-      }, [Location]);
+    }, []); 
 
     const token = localStorage.getItem("token");
 

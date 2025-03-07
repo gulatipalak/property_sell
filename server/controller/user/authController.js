@@ -3,7 +3,7 @@ const userModel = require("../../model/user/authModel")
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../../services/email_services")
-const generateOTP = () => Math.floor(1000 + Math.random () *9000)
+const generateOTP = require("../../utils/generate_otp")
 
 exports.userSignup = async (req, res) => {
   const { username, email, password, phone_number, licence_number, role} = req.body;

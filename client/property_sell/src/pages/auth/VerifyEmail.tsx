@@ -56,8 +56,8 @@ const VerifyEmail = () => {
             console.log(response,"response")
             if (flowType == "signup"){
                 setTimeout(() =>  {
-                    navigate ("/dashboard",{state: {emailVerified: true}});
-
+                    navigate ("/dashboard");
+                    localStorage.setItem("emailVerified","true");
                 }, 1000);
             } else if (flowType == "forget-password"){
                 setTimeout(() => navigate ("/reset-password",{state: {email: response.data.email}}), 1000);
