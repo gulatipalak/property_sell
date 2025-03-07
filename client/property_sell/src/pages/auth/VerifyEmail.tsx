@@ -15,7 +15,7 @@ const VerifyEmail = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const {email, flowType} = location.state || "";
-    const isNumeric = /^[0-9]+$/
+    const isNumeric = /^[0-9]+$/;
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -55,7 +55,10 @@ const VerifyEmail = () => {
 
             console.log(response,"response")
             if (flowType == "signup"){
-                setTimeout(() => navigate ("/dashboard"), 1000);
+                setTimeout(() =>  {
+                    navigate ("/dashboard",{state: {emailVerified: true}});
+
+                }, 1000);
             } else if (flowType == "forget-password"){
                 setTimeout(() => navigate ("/reset-password",{state: {email: response.data.email}}), 1000);
             }

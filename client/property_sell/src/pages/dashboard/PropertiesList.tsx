@@ -4,6 +4,7 @@ import { APP_URL } from "../../app_url";
 import axios from "axios";
 import { Link,useNavigate} from "react-router-dom";
 import { toast } from "react-toastify";
+import { confirmDialog } from "../../components/common/confirm"; 
 interface Property {
     _id: string;
     property_name: string;
@@ -51,30 +52,36 @@ const PropertiesList = () => {
     },[]); 
 
     const handleDelete = async (propertyId: string) => {
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                toast.error("Authentication error! Please log in.");
-                return;
-            }
+        const result = await confirmDialog("Are you sure you want to delete this property?");
+        if (result) {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    toast.error("Authentication error! Please log in.");
+                    return;
+                }
 
-            const response = await axios.delete(`${APP_URL}/api/v1/user/landlord/delete-property/${propertyId}`,{
-                headers: {Authorization: `Bearer ${token}`}
-            })
-            toast.success(response.data.message || "Property Deleted Successfully");
-            setProperties((prev) => prev.filter((prop) => prop._id !== propertyId));
-        }
-        catch (error:unknown) {
-            if(axios.isAxiosError(error)){
-                if (error.response?.status === 404) {
-                    console.log(error.response.data.message || "Property not found!");
-                    // setNoProperties(true);
+                const response = await axios.delete(`${APP_URL}/api/v1/user/landlord/delete-property/${propertyId}`,{
+                    headers: {Authorization: `Bearer ${token}`}
+                })
+                toast.success(response.data.message || "Property Deleted Successfully");
+                setProperties((prev) => prev.filter((prop) => prop._id !== propertyId));
+            }
+            catch (error:unknown) {
+                if(axios.isAxiosError(error)){
+                    if (error.response?.status === 404) {
+                        console.log(error.response.data.message || "Property not found!");
+                        // setNoProperties(true);
+                    }
+                }
+                else{
+                    console.log(error || "Something went wrong. Please try again later.");
                 }
             }
-            else{
-                console.log(error || "Something went wrong. Please try again later.");
-            }
+        }else {
+                console.log("Deletion Canceled");
         }
+        
     }
     return(
         <>
@@ -93,25 +100,29 @@ const PropertiesList = () => {
                     ) : (
                         <div className="grid grid-cols-3 gap-4">
                             {properties.map((property) => (
-                            <div key={property._id} className="property-card border border-gray-300 shadow-lg rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl p-4 space-y-3 group hover:border-blue-800">
-                                <h3 className="group-hover:text-blue-800 text-xl font-bold transition-all duration-300">{property.property_name}</h3>
-                                <p><strong>Posting For:</strong> {property.postingFor}</p>
-                                <p><strong>Type:</strong> {property.type}</p>
-                                <p><strong>Area:</strong> {property.area}</p>
-                                <p><strong>Bedrooms:</strong> {property.bedrooms}</p>
-                                <p><strong>Bathrooms:</strong> {property.bathrooms}</p>
-                                <p><strong>Furnished:</strong> {property.furnished}</p>
-                                <p><strong>Amenities:</strong> {property.amenities.join(", ")}</p>
-                                <p><strong>Location:</strong> {property.location}</p>
-                                <p><strong>Price:</strong> ₹{property.price}</p>
-                                <p><strong>Contact:</strong> {property.contact}</p>
-                                <p><strong>Status:</strong> {property.approvalStatus}</p>
+                            <div key={property._id} className="property-card border border-gray-300 shadow-lg rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl p-4 group hover:border-blue-800 flex flex-col justify-between">
+                                <div className="space-y-3 flex-1">
+                                    <h3 className="group-hover:text-blue-800 text-xl font-bold transition-all duration-300">{property.property_name}</h3>
+                                    <p><strong>Posting For:</strong> {property.postingFor}</p>
+                                    <p><strong>Type:</strong> {property.type}</p>
+                                    <p><strong>Area:</strong> {property.area}</p>
+                                    <p><strong>Bedrooms:</strong> {property.bedrooms}</p>
+                                    <p><strong>Bathrooms:</strong> {property.bathrooms}</p>
+                                    <p><strong>Furnished:</strong> {property.furnished}</p>
+                                    <p><strong>Amenities:</strong> {property.amenities.join(", ")}</p>
+                                    <p><strong>Location:</strong> {property.location}</p>
+                                    <p><strong>Price:</strong> ₹{property.price}</p>
+                                    <p><strong>Contact:</strong> {property.contact}</p>
+                                    <p><strong>Status:</strong> {property.approvalStatus}</p>
+                                </div>
 
-                                <button type="button" 
-                                 onClick={()=>navigate(`/property/edit/${property._id}`)} 
-                                 className="w-full bg-red-600 text-white py-2 hover:bg-red-700 transition rounded-sm mt-4">Edit</button>
+                                <div className="space-x-2 flex">
+                                    <button type="button" 
+                                    onClick={()=>navigate(`/property/edit/${property._id}`)} 
+                                    className="w-full bg-blue-800 text-white py-2 hover:bg-blue-900 transition rounded-sm mt-4">Edit</button>
 
-                                <button type="button" onClick={() => handleDelete(property._id)} className="w-full bg-red-600 text-white py-2 hover:bg-red-700 transition rounded-sm mt-4">Delete</button>
+                                    <button type="button" onClick={() => handleDelete(property._id)} className="w-full bg-red-600 text-white py-2 hover:bg-red-700 transition rounded-sm mt-4">Delete</button>
+                                </div>
                             </div>
                             ))}
                         </div>

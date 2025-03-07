@@ -16,10 +16,8 @@ const AddProperty = () => {
     const [isEdit, setIsEdit] = useState(false);
 
     useEffect(()=>{
-        if (type === 'edit') {
-            setIsEdit(true);
-        }
-    },[]);
+        setIsEdit(type === 'edit');
+    },[type]);
 
     const [formData, setFormData] = useState({
         property_name: '',
@@ -82,10 +80,10 @@ const AddProperty = () => {
             <ToastContainer/>
             <div className="">
                 <h2 className="text-2xl font-semibold text-blue-800 text-center mb-4">
-                    {type} New Property
+                    {type?.charAt(0).toUpperCase() + (type?.slice(1) || "")} New Property
                 </h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {isEdit && <div>
+                    <div>
                         <label className="block text-gray-700 font-medium">Property Name <span className="text-red-500">*</span></label>
                         <input
                             type="text"
@@ -96,9 +94,7 @@ const AddProperty = () => {
                             placeholder="Enter property name"
                         />
                     </div>
-                    }
                     
-
                     <div>
                         <label className="block text-gray-700 font-medium">Posting Property For <span className="text-red-500">*</span></label>
                         <select
@@ -231,7 +227,7 @@ const AddProperty = () => {
                     type="submit"
                     className="w-full bg-blue-800 text-white py-2 rounded-md hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70" disabled = {isLoading}
                     >
-                        {isLoading ? <ClipLoader color="white" size={19}/> : "Add Property"}
+                        {isLoading ? <ClipLoader color="white" size={19}/> : isEdit ? "Update Property" : "Add Property"}
                     </button>
                 </form>
             </div>
