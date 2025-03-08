@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 const AddProperty = () => {
     const {type,propertyid} = useParams();
 
-    console.log(type,propertyid,"type")
+    // console.log(type,propertyid,"type")
     //console.log(id,"id")
 
     const [isEdit, setIsEdit] = useState(false);
@@ -54,26 +54,87 @@ const AddProperty = () => {
             return;
         }
 
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                toast.error("Authentication error! Please log in.");
-                return;
+        if (isEdit) {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    toast.error("Authentication error! Please log in.");
+                    return;
+                }
+
+                const response = await axios.patch(`${APP_URL}/api/v1/user/landlord/update-property`,formData,
+                    {headers:{Authorization: `Bearer ${token}`}
+                });
+                
+                toast.success(response.data.message || "Property Updated Sucessfully!");
+                setFormData(response.data.data.property);
+                setIsLoading(false);
+                setTimeout( () => navigate("/properties"),3000);
             }
-            const response = await axios.post(`${APP_URL}/api/v1/user/landlord/add-property`,formData,
-                {headers:{Authorization: `Bearer ${token}`}
-            });
-            toast.success(response.data.message || "Property Added Sucessfully!");
-            setIsLoading(false);
-            setTimeout( () => navigate("/properties"),3000);
-        }
-        catch(error) {
-            console.error("Error:", error);
-            toast.error("Something went wrong. Please try again.");
-            setIsLoading(false);
+            catch(error: unknown) {
+                if(axios.isAxiosError(error)) {
+                    if(error.response?.status === 400) {
+                        console.log(error.response.data.message);
+                        setIsLoading(false);
+                    }
+                }
+                else {
+                    console.error("Error:", error);
+                    toast.error("Something went wrong. Please try again.");
+                    setIsLoading(false);
+                }
+                
+            }
+        } else {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    toast.error("Authentication error! Please log in.");
+                    return;
+                }
+                const response = await axios.post(`${APP_URL}/api/v1/user/landlord/add-property`,formData,
+                    {headers:{Authorization: `Bearer ${token}`}
+                });
+                toast.success(response.data.message || "Property Added Sucessfully!");
+                setIsLoading(false);
+                setTimeout( () => navigate("/properties"),3000);
+            }
+            catch(error) {
+                console.error("Error:", error);
+                toast.error("Something went wrong. Please try again.");
+                setIsLoading(false);
+            }
         }
     }
+    useEffect( () => {
+        const fetchProperty = async () => {
+            const token = localStorage.getItem("token");
+            
+            if (!token) {
+                toast.error("Authentication error! Please log in.");
+                navigate("/login");
+                return;
+            }
 
+            try {
+                const response = await axios.get(`${APP_URL}/api/v1/user/landlord/get-property/${propertyid}`,{
+                    headers: {Authorization: `Bearer ${token}`}
+                })
+                setFormData(response.data.data.property);
+                //console.log(response.data.data.property)
+            }
+            catch(error:unknown) {
+                if(axios.isAxiosError(error)){
+                    if(error.response?.status === 404){
+                        console.log("Property doesn't exists");
+                    }
+                }else {
+                    console.log("Something went wrong,Please try again later");
+                }
+            }
+        }
+        fetchProperty();
+    },[propertyid, navigate]);
     return (
         <>
             <PanelLayout>
