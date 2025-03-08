@@ -54,23 +54,56 @@ const AddProperty = () => {
             return;
         }
 
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                toast.error("Authentication error! Please log in.");
-                return;
+        if (isEdit) {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    toast.error("Authentication error! Please log in.");
+                    return;
+                }
+
+                const response = await axios.patch(`${APP_URL}/api/v1/user/landlord/update-property`,formData,
+                    {headers:{Authorization: `Bearer ${token}`}
+                });
+                
+                toast.success(response.data.message || "Property Updated Sucessfully!");
+                setFormData(response.data.data.property);
+                setIsLoading(false);
+                setTimeout( () => navigate("/properties"),3000);
             }
-            const response = await axios.post(`${APP_URL}/api/v1/user/landlord/add-property`,formData,
-                {headers:{Authorization: `Bearer ${token}`}
-            });
-            toast.success(response.data.message || "Property Added Sucessfully!");
-            setIsLoading(false);
-            setTimeout( () => navigate("/properties"),3000);
-        }
-        catch(error) {
-            console.error("Error:", error);
-            toast.error("Something went wrong. Please try again.");
-            setIsLoading(false);
+            catch(error: unknown) {
+                if(axios.isAxiosError(error)) {
+                    if(error.response?.status === 400) {
+                        console.log(error.response.data.message);
+                        setIsLoading(false);
+                    }
+                }
+                else {
+                    console.error("Error:", error);
+                    toast.error("Something went wrong. Please try again.");
+                    setIsLoading(false);
+                }
+                
+            }
+        } else {
+            try {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    toast.error("Authentication error! Please log in.");
+                    return;
+                }
+                const response = await axios.post(`${APP_URL}/api/v1/user/landlord/add-property`,formData,
+                    {headers:{Authorization: `Bearer ${token}`}
+                });
+                toast.success(response.data.message || "Property Added Sucessfully!");
+                setIsLoading(false);
+                setTimeout( () => navigate("/properties"),3000);
+            }
+            catch(error) {
+                console.error("Error:", error);
+                toast.error("Something went wrong. Please try again.");
+                setIsLoading(false);
+            }
         }
     }
     useEffect( () => {
