@@ -88,10 +88,23 @@ exports.deleteProperty = async (req,res) => {
     }
 }
 
-// exports.updateProperty = async (req,res) => {
-//     try {
-//         const property_id = req.params.id;
+exports.getProperty = async (req,res) => {
+    try {
+        const property_id = req.params.id;
+        
+        if (!property_id) {
+            return res.status(400).json({ status: false, code: 400, message: "Property ID is required!" });
+        }
+        
+        const property = await propertyModel.findById(property_id).select("-approvalStatus");
 
+        if(!property) {
+            return res.status(404).json({ status: false, code: 404, message: "Property not found" });
+        }
 
-//     }
-// }
+        return res.status(200).json({status: true, code: 200, data:{property: property}});
+    }
+    catch(error) {
+        return res.status(500).json({status: false, code: 500, message: "Internal Server Error", error});
+    }
+}

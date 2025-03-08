@@ -6,6 +6,7 @@ import { Link,useNavigate} from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmDialog } from "../../components/common/confirm"; 
 import { jwtDecode } from "jwt-decode";
+import { ClipLoader } from "react-spinners";
 interface Property {
     _id: string;
     property_name: string;
@@ -26,14 +27,21 @@ const PropertiesList = () => {
     const  navigate = useNavigate();
     const [properties, setProperties] = useState<Property[]>([]);
     const [noProperties, setNoProperties] = useState(false);
- 
+    const [isLoading, setIsLoading] = useState(true);
     useEffect( () => {
         const fetchProperties = async() => {
             try {
                 const token = localStorage.getItem("token");
+                if (!token) {
+                    toast.error("Authentication error! Please log in.");
+                    navigate("/login");
+                    return;
+                }
+
                 const response = await axios.get(`${APP_URL}/api/v1/user/landlord/get-properties`,{
                     headers:{Authorization: `Bearer ${token}`}
                 })
+                setIsLoading(false);
                 setProperties(response.data.data.properties || []);
                 console.log(response.data.data.properties);
             }
@@ -41,6 +49,7 @@ const PropertiesList = () => {
                 if(axios.isAxiosError(error)){
                     if (error.response?.status === 404) {
                         console.log(error.response.data.message || "No properties Found");
+                        setIsLoading(false);
                         setNoProperties(true);
                     }
                 }
@@ -59,6 +68,7 @@ const PropertiesList = () => {
                 const token = localStorage.getItem("token");
                 if (!token) {
                     toast.error("Authentication error! Please log in.");
+                    navigate("/login");
                     return;
                 }
 
@@ -93,8 +103,7 @@ const PropertiesList = () => {
                 <h2 className="text-2xl font-semibold text-blue-800 text-center mb-4">
                     All Properties
                 </h2>
-                
-                    { noProperties ? (
+                {isLoading ? <div className="flex justify-center items-center mt-60"><ClipLoader color="blue"/></div> : noProperties ? (
                         <div className="flex w-full h-full items-center justify-center">
                             <div className="text-center">
                                 <h2 className="mb-4 font-medium text-gray-800 text-xl">No Property is added yet.</h2>
@@ -134,6 +143,7 @@ const PropertiesList = () => {
                             ))}
                         </div>
                     )}
+                    
             </PanelLayout>
         </>
     )
