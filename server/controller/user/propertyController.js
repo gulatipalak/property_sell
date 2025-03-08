@@ -87,3 +87,11 @@ exports.deleteProperty = async (req,res) => {
         return res.status(500).json({status: false, code: 500, message: "Internal Server Error", error});
     }
 }
+
+// exports.updateProperty = async (req,res) => {
+//     try {
+//         const property_id = req.params.id;
+
+
+//     }
+// }
