@@ -9,9 +9,11 @@ import { useNavigate } from "react-router-dom";
 
 const AddProperty = () => {
     const {type,propertyid} = useParams();
-
+    const [selectedImage,setSelectedImage] = useState("");
     // console.log(type,propertyid,"type")
     //console.log(id,"id")
+    console.log("selectedImage:",selectedImage);
+
 
     const [isEdit, setIsEdit] = useState(false);
 
@@ -30,7 +32,8 @@ const AddProperty = () => {
         amenities: '',
         contact: '',
         location: '',
-        price: ''
+        price: '',
+        image:  null as File | null
     });
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
@@ -106,6 +109,27 @@ const AddProperty = () => {
             }
         }
     }
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+     console.log ("hello" ,e.target.files);
+     if (!e.target.files || e.target.files.length === 0) {
+        console.log("No file selected");
+        return;
+    }
+
+     const file = e.target.files[0];
+
+     setFormData((prevFormData)=>({
+        ...prevFormData,
+        image: file
+     }));
+
+     console.log(typeof file);
+
+     setSelectedImage(URL.createObjectURL(file));
+
+    }
+
     useEffect( () => {
         const fetchProperty = async () => {
             const token = localStorage.getItem("token");
@@ -283,6 +307,23 @@ const AddProperty = () => {
                             placeholder="Enter Contact Number"
                         />
                     </div>
+
+                    
+
+                    {selectedImage ?
+                        <img src={selectedImage} alt="preview" className="h-[200px] object-contain"/>
+                        : <div>
+                        <label className="block text-gray-700 font-medium">Upload Image <span className="text-red-500">*</span></label>
+                        <input
+                            type="file"
+                            name="image"
+                            id="uploadImage"
+                            accept ="image/*"
+                            onChange={handleImageChange}
+                        />
+                    </div>
+                    }
+                    
 
                     <button
                     type="submit"
