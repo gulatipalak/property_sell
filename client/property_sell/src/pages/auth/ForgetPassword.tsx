@@ -6,6 +6,7 @@ import { ClipLoader } from "react-spinners";
 import AuthLayout from "../../layouts/AuthLayout";
 import axios from "axios";
 import { APP_URL } from "../../app_url";
+import Button from "../../components/Button";
 
 
 
@@ -83,9 +84,7 @@ const ForgetPassword = () => {
                     </div>
 
                     {/* Submit Button */}
-                    <button type="submit" className="w-full bg-blue-800 text-white py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-70 disabled:cursor-not-allowed" disabled={loading}>
-                        {loading ? <ClipLoader color="#ffffff" size={19}/> : "Send OTP"}
-                    </button>
+                    <Button type="submit" disabled={loading}>{loading ? <ClipLoader color="#ffffff" size={19}/> : "Send OTP"}</Button>
                 </form>
 
                 {/* Back to Login */}

@@ -6,6 +6,7 @@ import { ClipLoader } from "react-spinners";
 import axios from "axios";
 import { APP_URL } from "../../app_url";
 import AuthLayout from "../../layouts/AuthLayout";
+import Button from "../../components/Button";
 
 const VerifyEmail = () => {
     const [isResendDisabled,setIsResendDisabled] = useState(true);
@@ -94,6 +95,7 @@ const VerifyEmail = () => {
         }
     },[timer])
     const handleResendOTP = async () => {
+        setOtp("");
         setIsResendDisabled(true);
         setTimer(30);
         
@@ -138,18 +140,18 @@ const VerifyEmail = () => {
                                     backgroundColor:"#fafafa",
                                     fontSize:"22px",
                                     textAlign:"center",
-                                    outline:"none"
+                                    outline:"none",
+                                    marginBottom: "20px"
                                 }
                             }
                             
                             />
                     </div>
-                    <button type="submit" className="w-full bg-blue-800 text-white py-2 hover:bg-blue-700 transition rounded-sm mt-4 disabled:opacity-70 disabled:cursor-not-allowed" disabled={isLoading}>
-                        {isLoading ? <ClipLoader color="#ffffff" size={19}/> : "Verify OTP" }
-                    </button>
+
+                    <Button type="submit" disabled={isLoading}>{isLoading ? <ClipLoader color="#ffffff" size={19}/> : "Verify OTP" }</Button>
                 </form>
                 <div className="flex justify-between mt-4">
-                    <button className="text-blue-800 font-semibold hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50" disabled={isResendDisabled} onClick={handleResendOTP}>
+                    <button className="text-blue-800 font-semibold disabled:cursor-not-allowed disabled:opacity-50" disabled={isResendDisabled} onClick={handleResendOTP}>
                         {isResendDisabled ? `Resend OTP in ${timer}s` : "Resend OTP"}
                     </button>
                     <Link to="/login" className="text-blue-800 font-semibold">

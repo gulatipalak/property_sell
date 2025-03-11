@@ -6,6 +6,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { APP_URL } from "../../app_url";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Button from "../../components/Button";
 
 const AddProperty = () => {
     const {type,propertyid} = useParams();
@@ -324,13 +325,7 @@ const AddProperty = () => {
                     </div>
                     }
                     
-
-                    <button
-                    type="submit"
-                    className="w-full bg-blue-800 text-white py-2 rounded-md hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70" disabled = {isLoading}
-                    >
-                        {isLoading ? <ClipLoader color="white" size={19}/> : isEdit ? "Update Property" : "Add Property"}
-                    </button>
+                    <Button type="submit" disabled = {isLoading}>{isLoading ? <ClipLoader color="white" size={19}/> : isEdit ? "Update Property" : "Add Property"}</Button>
                 </form>
             </div>
             </PanelLayout>

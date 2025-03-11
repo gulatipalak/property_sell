@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import PanelLayout from "../../layouts/PanelLayout";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -6,6 +6,7 @@ import { APP_URL } from "../../app_url";
 import SuccessModal from "../../components/SuccessModal";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
+import Button from "../../components/Button";
 
 const Dashboard = () => {
   const [username, setUsername] = useState("");
@@ -62,15 +63,8 @@ const Dashboard = () => {
             <h2 className="mb-4 font-bold text-gray-800 text-xl">
               Hey {username}, Welcome to Property Bazaar!
             </h2>
-            {user.role === "landlord" ? (
-              <Link
-                to="/property/add"
-                className="bg-blue-800 text-white hover:bg-blue-700 rounded-sm px-7 py-2 inline-block transition-all duration-300"
-              >
-                Add Property
-              </Link>
-            ) : (
-              ""
+            {user.role === "landlord" && (
+              <Button to="/property/add">Add Property</Button>
             )}
           </div>
         </div>

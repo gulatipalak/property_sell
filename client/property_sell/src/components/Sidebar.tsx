@@ -2,7 +2,7 @@ import { Link, useLocation} from "react-router-dom";
 
 const Sidebar = () => {
     const location = useLocation();
-    const menuItems = ["dashboard","properties","settings"]
+    const menuItems = ["dashboard","properties"]
     return (
       <div className="w-64 min-h-screen bg-blue-800 text-white flex flex-col">
       <div className="p-6 text-[24px] font-bold">Property Bazaar</div>
