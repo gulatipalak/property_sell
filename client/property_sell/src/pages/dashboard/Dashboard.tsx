@@ -1,40 +1,14 @@
-import { useNavigate } from "react-router-dom";
 import PanelLayout from "../../layouts/PanelLayout";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { APP_URL } from "../../app_url";
+import { useContext, useEffect, useState } from "react";
 import SuccessModal from "../../components/SuccessModal";
-import { jwtDecode } from "jwt-decode";
-import { toast } from "react-toastify";
 import Button from "../../components/Button";
+import { UserContext } from "../../context/UserContext";
 
 const Dashboard = () => {
-  const [username, setUsername] = useState("");
-  const navigate = useNavigate();
-  const [showVerifiedSuccessModal, setVerifiedShowSuccessModal] =
-    useState(false);
-    
+  const context = useContext(UserContext) ?? {user: null, setUser: () => {} };
 
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          toast.error("Authentication error! Please log in.");
-          navigate("/login");
-          return;
-        }
-        const response = await axios.get(`${APP_URL}/api/v1/user/get-profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUsername(response.data.data.username);
-      } catch (error) {
-        console.error("Failed to fetch user data.", error);
-      }
-    };
-    fetchUser();
-  }, []);
+  const {user} = context;
+  const [showVerifiedSuccessModal, setVerifiedShowSuccessModal] = useState(false);
 
   useEffect(() => {
     const emailVerified = localStorage.getItem("emailVerified");
@@ -44,10 +18,6 @@ const Dashboard = () => {
       localStorage.removeItem("emailVerified"); // Remove it to prevent running on refresh
     }
   }, []);
-
-  const token = localStorage.getItem("token");
-
-  const user = jwtDecode<{ role: string }>(token ?? "");
 
   return (
     <>
@@ -61,11 +31,10 @@ const Dashboard = () => {
         <div className="flex items-center justify-center h-100">
           <div className="text-center">
             <h2 className="mb-4 font-bold text-gray-800 text-xl">
-              Hey {username}, Welcome to Property Bazaar!
+              Hey {user ? user.username : "Guest"}, Welcome to Property Bazaar!
             </h2>
-            {user.role === "landlord" && (
-              <Button to="/property/add">Add Property</Button>
-            )}
+            {user?.role === "landlord" ? 
+              (<Button to="/property/add">Add Property</Button>): ""}
           </div>
         </div>
       </PanelLayout>
