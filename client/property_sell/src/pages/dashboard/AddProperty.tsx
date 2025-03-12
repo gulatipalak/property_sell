@@ -11,10 +11,7 @@ import Button from "../../components/Button";
 const AddProperty = () => {
     const {type,propertyid} = useParams();
     const [selectedImage,setSelectedImage] = useState("");
-    // console.log(type,propertyid,"type")
-    //console.log(id,"id")
-    console.log("selectedImage:",selectedImage);
-
+    // console.log("selectedImage:",selectedImage);
 
     const [isEdit, setIsEdit] = useState(false);
 
@@ -36,8 +33,26 @@ const AddProperty = () => {
         price: '',
         image:  null as File | null
     });
+    
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log ("files" ,e.target.files);
+        if (!e.target.files || e.target.files.length === 0) {
+           console.log("No file selected");
+           return;
+       }
+   
+        const file = e.target.files[0];
+   
+        setFormData((prevFormData)=>({
+           ...prevFormData,
+           image: file
+        }));
+   
+        setSelectedImage(URL.createObjectURL(file));
+       }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData({
@@ -50,12 +65,30 @@ const AddProperty = () => {
         e.preventDefault();
         setIsLoading(true);
 
-        const {property_name, postingFor, area, contact, price} = formData;
+        const {property_name, postingFor, type, area, bedrooms, bathrooms, furnished, amenities, contact, location, price, image} = formData;
 
         if(!property_name || !postingFor || !area || !price || !contact ) {
             toast.error("Please Fill All Required Fields.");
             setIsLoading(false);
             return;
+        }
+
+        // Create a FormData object
+        const formDataToSend = new FormData();
+        formDataToSend.append("property_name", property_name);
+        formDataToSend.append("postingFor", postingFor);
+        formDataToSend.append("type", type);
+        formDataToSend.append("area", area);
+        formDataToSend.append("bedrooms", bedrooms);
+        formDataToSend.append("bathrooms", bathrooms);
+        formDataToSend.append("furnished", furnished);
+        formDataToSend.append("amenities", amenities);
+        formDataToSend.append("contact", contact);
+        formDataToSend.append("location", location);
+        formDataToSend.append("price", price);
+        
+        if(image) {
+            formDataToSend.append("image", image);
         }
 
         if (isEdit) {
@@ -66,8 +99,8 @@ const AddProperty = () => {
                     return;
                 }
 
-                const response = await axios.patch(`${APP_URL}/api/v1/user/landlord/update-property`,formData,
-                    {headers:{Authorization: `Bearer ${token}`}
+                const response = await axios.patch(`${APP_URL}/api/v1/user/landlord/update-property`,formDataToSend,
+                    {headers:{Authorization: `Bearer ${token}`,"Content-Type": "multipart/form-data"}
                 });
                 
                 toast.success(response.data.message || "Property Updated Sucessfully!");
@@ -111,26 +144,6 @@ const AddProperty = () => {
         }
     }
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-     console.log ("hello" ,e.target.files);
-     if (!e.target.files || e.target.files.length === 0) {
-        console.log("No file selected");
-        return;
-    }
-
-     const file = e.target.files[0];
-
-     setFormData((prevFormData)=>({
-        ...prevFormData,
-        image: file
-     }));
-
-     console.log(typeof file);
-
-     setSelectedImage(URL.createObjectURL(file));
-
-    }
-
     useEffect( () => {
         const fetchProperty = async () => {
             const token = localStorage.getItem("token");
@@ -168,7 +181,7 @@ const AddProperty = () => {
                 <h2 className="text-2xl font-semibold text-blue-800 text-center mb-4">
                     {type?.charAt(0).toUpperCase() + (type?.slice(1) || "")} New Property
                 </h2>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
                     <div>
                         <label className="block text-gray-700 font-medium">Property Name <span className="text-red-500">*</span></label>
                         <input
