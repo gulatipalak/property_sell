@@ -1,35 +1,20 @@
-import axios from "axios";
-import { useState, useEffect } from "react";
-import { APP_URL } from "../app_url";
+
+import {  useContext } from "react";
+
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
 
 const Header = () => {
-    const [username, setUsername] = useState("");
+    const context = useContext(UserContext) ?? { user: null, setUser: () => {} };
+    const { user, setUser } = context;
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                // console.log(token);
-                const response = await axios.get(`${APP_URL}/api/v1/user/get-profile`, {
-                    headers: {Authorization: `Bearer ${token}`}
-                })
-                console.log("Request Headers:", response.config.headers);
-                setUsername(response.data.data.username);
-            }
-            catch (error){
-                console.error("Failed to fetch user data", error);
-            }
-        };
-        fetchUser();
-    },[]);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("role");
         toast.success("Logged out Successfully!");
+        setUser(null);
         setTimeout( () => navigate("/login"),3000);
     }
     return (
@@ -39,7 +24,7 @@ const Header = () => {
             <h2 className="text-xl font-semibold text-white">Dashboard</h2>
             <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                    <span className="font-medium text-white">{username || "Guest"}</span>
+                    <span className="font-medium text-white">{user?.username ?? "Guest"}</span>
                 </div>
                 <button
                     onClick={handleLogout}

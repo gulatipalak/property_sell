@@ -7,6 +7,7 @@ import AuthLayout from "../../layouts/AuthLayout";
 import axios from "axios";
 import { APP_URL } from "../../app_url";
 import {requestNotificationPermission} from "../../firebase";
+import Button from "../../components/Button";
 
 const Login = () => {
     const [formData,setFormData] = useState({
@@ -63,7 +64,7 @@ const Login = () => {
           }
           else if(error.response?.data.code == 'EMAIL_NOT_VERIFIED') {
             toast.success(error.response.data.message || "Verify Your email.");
-            navigate("/verify-email",{ state: { email: error.response.data.email }});
+            navigate("/verify-email",{ state: { email: error.response.data.email,flowType: "signup" }});
           }
         }
         else {
@@ -109,9 +110,10 @@ const Login = () => {
                       </button>
                       </div>
                   </div>
-                  <button type="submit" className="w-full bg-blue-800 text-white py-2 hover:bg-blue-700 transition rounded-sm disabled:opacity-70 disabled:cursor-not-allowed" disabled={loading}>
+                  {/* <button type="submit" className="w-full bg-blue-800 text-white py-2 hover:bg-blue-700 transition rounded-sm disabled:opacity-70 disabled:cursor-not-allowed" disabled={loading}>
                      {loading ? <ClipLoader color="#ffffff" size={19}/> : "Login"} 
-                  </button>
+                  </button> */}
+                  <Button type="submit" disabled={loading}>{loading ? <ClipLoader color="#ffffff" size={19}/> : "Login"}</Button>
               </form>
               {/* Forgot Password Link */}
               <div className="flex justify-center mt-4">

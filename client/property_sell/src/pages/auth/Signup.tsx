@@ -7,6 +7,7 @@ import { ClipLoader } from "react-spinners";
 import { APP_URL } from "../../app_url";
 import AuthLayout from "../../layouts/AuthLayout";
 import ReactPasswordChecklist from "react-password-checklist";
+import Button from "../../components/Button";
 
 const Signup = () => {
     const [formData,setFormData] = useState({
@@ -194,9 +195,7 @@ const Signup = () => {
                     value={formData.password}
                     valueAgain={formData.confirm_password}
                 />
-                <button type="submit" className="w-full bg-blue-800 text-white py-2 hover:bg-blue-700 transition rounded-md disabled:opacity-70 disabled:cursor-not-allowed" disabled={loading}>
-                {loading ? <ClipLoader color="#ffffff" size={19}/> : "Sign Up"} 
-                </button>
+                <Button type="submit" disabled={loading}>{loading ? <ClipLoader color="#ffffff" size={19}/> : "Sign Up"} </Button>
                 </form>
                 <p className="text-center text-gray-600 mt-4">
                 Already have an account? <Link to="/Login" className="text-blue-800 font-semibold">Login</Link>
