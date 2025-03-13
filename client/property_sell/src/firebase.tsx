@@ -52,7 +52,7 @@ onMessage(messaging, (payload) => {
 
 // // Register Service Worker
 if ("serviceWorker" in navigator) {
-    console.log(navigator,"navigator")
+    // console.log(navigator,"navigator")
     navigator.serviceWorker.register("/firebase-messaging-sw.js")
         .then((registration) => {
             console.log("Service Worker registered:", registration);
