@@ -22,6 +22,7 @@ interface Property {
     location: string;
     price: string;
     approvalStatus: string;
+    image: string;
 }
 
 const PropertiesList = () => {
@@ -115,6 +116,7 @@ const PropertiesList = () => {
                             {properties.map((property) => (
                             <div key={property._id} className="property-card border border-gray-300 shadow-lg rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl p-4 group hover:border-blue-800 flex flex-col justify-between">
                                 <div className="space-y-3 flex-1">
+                                    {property.image && <img src={property.image} className="h-[200px] object-cover w-full" alt="property-image"/>}
                                     <h3 className="group-hover:text-blue-800 text-xl font-bold transition-all duration-300">{property.property_name}</h3>
                                     <p><strong>Posting For:</strong> {property.postingFor}</p>
                                     <p><strong>Type:</strong> {property.type}</p>

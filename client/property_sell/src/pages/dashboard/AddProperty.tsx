@@ -99,7 +99,7 @@ const AddProperty = () => {
                     return;
                 }
 
-                const response = await axios.patch(`${APP_URL}/api/v1/user/landlord/update-property`,formDataToSend,
+                const response = await axios.patch(`${APP_URL}/api/v1/user/landlord/update-property`,formData,
                     {headers:{Authorization: `Bearer ${token}`,"Content-Type": "multipart/form-data"}
                 });
                 
@@ -129,7 +129,12 @@ const AddProperty = () => {
                     toast.error("Authentication error! Please log in.");
                     return;
                 }
-                const response = await axios.post(`${APP_URL}/api/v1/user/landlord/add-property`,formData,
+//                 console.log("Checking FormData:");
+// for (const pair of formDataToSend.entries()) {
+//     console.log(`${pair[0]}:`, pair[1]); // Logs key-value pairs
+// }
+
+                const response = await axios.post(`${APP_URL}/api/v1/user/landlord/add-property`,formDataToSend,
                     {headers:{Authorization: `Bearer ${token}`}
                 });
                 toast.success(response.data.message || "Property Added Sucessfully!");
@@ -173,6 +178,7 @@ const AddProperty = () => {
         }
         fetchProperty();
     },[propertyid, navigate]);
+    console.log("image URL",formData.image);
     return (
         <>
             <PanelLayout>
@@ -325,7 +331,7 @@ const AddProperty = () => {
                     
 
                     {selectedImage ?
-                        <img src={selectedImage} alt="preview" className="h-[200px] object-contain"/>
+                        <img src = {selectedImage} alt="preview" className="h-[200px] object-contain"/>
                         : <div>
                         <label className="block text-gray-700 font-medium">Upload Image <span className="text-red-500">*</span></label>
                         <input
@@ -335,8 +341,7 @@ const AddProperty = () => {
                             accept ="image/*"
                             onChange={handleImageChange}
                         />
-                    </div>
-                    }
+                    </div>}
                     
                     <Button type="submit" disabled = {isLoading}>{isLoading ? <ClipLoader color="white" size={19}/> : isEdit ? "Update Property" : "Add Property"}</Button>
                 </form>

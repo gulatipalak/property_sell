@@ -30,7 +30,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setUser(response.data.data);
-                console.log(response.data.data);
             } catch (error) {
                 console.error("Failed to fetch user data:", error);
             }

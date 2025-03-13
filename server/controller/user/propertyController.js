@@ -1,7 +1,10 @@
 const propertyModel = require("../../model/user/propertyModel");
+const {uploadToCloudinary}  = require("../../utils/cloudinary");
 
 exports.addProperty = async (req,res) => {
     try {
+        console.log("Received file:", req.file);
+        console.log("Received body:", req.body);
         const {property_name, postingFor, price, type, location , area, bedrooms, bathrooms, contact, amenities, furnished} = req.body;
         const user = req.user
         // console.log(user,"user")
@@ -10,6 +13,14 @@ exports.addProperty = async (req,res) => {
             return res.status(400).json({status: false, code: 400, message: "Please Fill All Required Fields"});
         }
         // console.log("userId",user.id)
+        
+
+        let imageUrl = null;
+        if (req.file) {
+          // Upload image to Cloudinary
+          imageUrl = await uploadToCloudinary(req.file.buffer);
+          console.log(imageUrl);
+        }
 
         const newProperty = new propertyModel({
             userId:user.id,
@@ -23,7 +34,8 @@ exports.addProperty = async (req,res) => {
             bathrooms, 
             contact, 
             amenities, 
-            furnished
+            furnished,
+            image: imageUrl,
         });
 
         // console.log(newProperty,"new")
