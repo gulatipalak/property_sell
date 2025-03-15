@@ -30,7 +30,7 @@ const requestNotificationPermission = async () => {
             });
 
             if (token) {
-                console.log("FCM Token:", token);
+                // console.log("FCM Token:", token);
                 localStorage.setItem("device_token", token);
                 return token;
             } else {

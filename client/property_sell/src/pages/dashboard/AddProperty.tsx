@@ -7,6 +7,7 @@ import { APP_URL } from "../../app_url";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
+import { X } from "lucide-react";
 
 const AddProperty = () => {
     const {type,propertyid} = useParams();
@@ -31,7 +32,7 @@ const AddProperty = () => {
         contact: '',
         location: '',
         price: '',
-        image:  null as File | null
+        image:  null as string | File | null,
     });
     
     const [isLoading, setIsLoading] = useState(false);
@@ -99,14 +100,16 @@ const AddProperty = () => {
                     return;
                 }
 
-                const response = await axios.patch(`${APP_URL}/api/v1/user/landlord/update-property`,formData,
+                const response = await axios.patch(`${APP_URL}/api/v1/user/landlord/update-property`,formDataToSend,
                     {headers:{Authorization: `Bearer ${token}`,"Content-Type": "multipart/form-data"}
                 });
                 
                 toast.success(response.data.message || "Property Updated Sucessfully!");
                 setFormData(response.data.data.property);
-                setIsLoading(false);
-                setTimeout( () => navigate("/properties"),3000);
+                
+                setTimeout( () => {
+                navigate("/properties")
+                setIsLoading(false)},3000);
             }
             catch(error: unknown) {
                 if(axios.isAxiosError(error)) {
@@ -129,17 +132,19 @@ const AddProperty = () => {
                     toast.error("Authentication error! Please log in.");
                     return;
                 }
-//                 console.log("Checking FormData:");
-// for (const pair of formDataToSend.entries()) {
-//     console.log(`${pair[0]}:`, pair[1]); // Logs key-value pairs
-// }
+                //                 console.log("Checking FormData:");
+                // for (const pair of formDataToSend.entries()) {
+                //     console.log(`${pair[0]}:`, pair[1]); // Logs key-value pairs
+                // }
 
                 const response = await axios.post(`${APP_URL}/api/v1/user/landlord/add-property`,formDataToSend,
-                    {headers:{Authorization: `Bearer ${token}`}
+                    {headers:{Authorization: `Bearer ${token}`,"Content-Type": "multipart/form-data"}
                 });
                 toast.success(response.data.message || "Property Added Sucessfully!");
-                setIsLoading(false);
-                setTimeout( () => navigate("/properties"),3000);
+                
+                setTimeout( () => {
+                    navigate("/properties")
+                    setIsLoading(false);},3000);
             }
             catch(error) {
                 console.error("Error:", error);
@@ -178,6 +183,16 @@ const AddProperty = () => {
         }
         fetchProperty();
     },[propertyid, navigate]);
+
+    const removeImage = () => {
+        setFormData((prev)=>({
+            ...prev,
+            image:null
+        })
+        )
+        setSelectedImage("");
+    }
+
     console.log("image URL",formData.image);
     return (
         <>
@@ -271,8 +286,7 @@ const AddProperty = () => {
                         name="furnished"
                         value = {formData.furnished}
                         onChange={handleChange}
-                        className="w-full mt-1 p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
-                    >
+                        className="w-full mt-1 p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800">
                         <option value="">Select Type</option>
                         <option value="Fully Furnished">Fully Furnished</option>
                         <option value="Semi Furnished">Semi Furnished</option>
@@ -331,17 +345,30 @@ const AddProperty = () => {
                     
 
                     {selectedImage ?
-                        <img src = {selectedImage} alt="preview" className="h-[200px] object-contain"/>
-                        : <div>
-                        <label className="block text-gray-700 font-medium">Upload Image <span className="text-red-500">*</span></label>
+                        <div className="relative inline-block">
+                            <img src = {selectedImage} alt="preview" className="h-40 object-contain"/>
+                            <button
+                                type="button"
+                                onClick={removeImage}
+                                className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full w-6 h-6 flex items-center justify-center cursor-pointer"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+                        : <label
+                        htmlFor="uploadImage"
+                        className="w-full h-40 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 transition"
+                    >
+                        <span className="text-gray-500">Click to Upload</span>
                         <input
                             type="file"
-                            name="image"
                             id="uploadImage"
-                            accept ="image/*"
+                            accept="image/*"
                             onChange={handleImageChange}
+                            className="hidden"
                         />
-                    </div>}
+                    </label>}
+                    {/* <img src = {formData.image}  alt="preview" className="h-40 object-contain"/> */}
                     
                     <Button type="submit" disabled = {isLoading}>{isLoading ? <ClipLoader color="white" size={19}/> : isEdit ? "Update Property" : "Add Property"}</Button>
                 </form>

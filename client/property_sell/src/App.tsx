@@ -11,6 +11,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AddProperty from "./pages/dashboard/AddProperty";
 import PropertiesList from "./pages/dashboard/PropertiesList";
 import Unauthorized from "./pages/Unauthorized";
+import ChatModule from "./pages/dashboard/ChatModule";
 
 function App() {
   return (
@@ -25,9 +26,10 @@ function App() {
         <Route path="/forget-password" element={<ForgetPassword/>}/>
         <Route path="/reset-password" element={<ResetPassword/>}/>
         <Route path="/dashboard" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><Dashboard/></ProtectedRoute>}/>
-        <Route path="/property/:type" element={<ProtectedRoute allowedRoles={["landlord"]}><AddProperty/></ProtectedRoute>}/>
-        <Route path="/property/:type/:propertyid" element={<ProtectedRoute allowedRoles={["landlord"]}><AddProperty/></ProtectedRoute>}/>
+        <Route path="/properties/property/:type" element={<ProtectedRoute allowedRoles={["landlord"]}><AddProperty/></ProtectedRoute>}/>
+        <Route path="/properties/property/:type/:propertyid" element={<ProtectedRoute allowedRoles={["landlord"]}><AddProperty/></ProtectedRoute>}/>
         <Route path="/properties" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><PropertiesList/></ProtectedRoute>}/>
+        <Route path="/chat" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><ChatModule/></ProtectedRoute>}/>
       </Routes>
     </Router>
   )

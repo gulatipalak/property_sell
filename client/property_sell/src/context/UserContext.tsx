@@ -29,13 +29,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                 const response = await axios.get(`${APP_URL}/api/v1/user/get-profile`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+
                 setUser(response.data.data);
+                console.log("user",response.data.data);
+                // console.log("user",user);
             } catch (error) {
                 console.error("Failed to fetch user data:", error);
             }
         };
         fetchUser();
     }, []);
+
+    useEffect(() => {
+        console.log("Updated user state:", user); // ✅ Now logs updated state
+    }, [user]); 
 
     return (
         <UserContext.Provider value={{ user, setUser }}>

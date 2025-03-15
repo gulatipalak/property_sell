@@ -34,7 +34,7 @@ const Dashboard = () => {
               Hey {user ? user.username : "Guest"}, Welcome to Property Bazaar!
             </h2>
             {user?.role === "landlord" ? 
-              (<Button to="/property/add">Add Property</Button>): ""}
+              (<Button to="/properties/property/add">Add Property</Button>): ""}
           </div>
         </div>
       </PanelLayout>

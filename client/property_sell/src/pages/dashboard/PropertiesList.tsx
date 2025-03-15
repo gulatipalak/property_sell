@@ -2,7 +2,7 @@ import { useState,useEffect, useContext } from "react";
 import PanelLayout from "../../layouts/PanelLayout";
 import { APP_URL } from "../../app_url";
 import axios from "axios";
-import { Link,useNavigate} from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmDialog } from "../../components/common/confirm"; 
 import { ClipLoader } from "react-spinners";
@@ -30,6 +30,7 @@ const PropertiesList = () => {
     const [properties, setProperties] = useState<Property[]>([]);
     const [noProperties, setNoProperties] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+
     useEffect( () => {
         const fetchProperties = async() => {
             try {
@@ -43,9 +44,11 @@ const PropertiesList = () => {
                 const response = await axios.get(`${APP_URL}/api/v1/user/landlord/get-properties`,{
                     headers:{Authorization: `Bearer ${token}`}
                 })
+                const fetchedProperties = response.data.data.properties || [];
                 setIsLoading(false);
-                setProperties(response.data.data.properties || []);
-                console.log(response.data.data.properties);
+                setProperties(fetchedProperties);
+                
+                // console.log(response.data.data.properties);
             }
             catch (error:unknown) {
                 if(axios.isAxiosError(error)){
@@ -78,7 +81,12 @@ const PropertiesList = () => {
                     headers: {Authorization: `Bearer ${token}`}
                 })
                 toast.success(response.data.message || "Property Deleted Successfully");
-                setProperties((prev) => prev.filter((prop) => prop._id !== propertyId));
+                setProperties((prev) => {
+                    const updatedProperties = prev.filter((prop) => prop._id !== propertyId);
+                    setNoProperties(updatedProperties.length === 0); // If no properties left, update state
+                    return updatedProperties;
+                });
+                
             }
             catch (error:unknown) {
                 if(axios.isAxiosError(error)){
@@ -101,14 +109,18 @@ const PropertiesList = () => {
     return(
         <>
             <PanelLayout>
-                <h2 className="text-2xl font-semibold text-blue-800 text-center mb-4">
-                    All Properties
-                </h2>
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-semibold text-blue-800 text-center">
+                        All Properties
+                    </h2>
+                    {user?.role === "landlord" ? 
+                    (<Button to="/properties/property/add">Add Property</Button>): ""}
+                </div>
+                
                 {isLoading ? <div className="flex justify-center items-center mt-60"><ClipLoader color="blue"/></div> : noProperties ? (
                         <div className="flex w-full h-full items-center justify-center">
                             <div className="text-center">
                                 <h2 className="mb-4 font-medium text-gray-800 text-xl">No Property is added yet.</h2>
-                                <Link to="/add-property" className="bg-blue-800 text-white hover:bg-blue-700 rounded-sm px-7 py-2 inline-block transition-all duration-300">Add Property</Link>
                             </div>
                         </div>
                     ) : (
@@ -133,11 +145,13 @@ const PropertiesList = () => {
 
                                 {user?.role === "landlord" &&
                                     <div className="space-x-2 flex mt-4">
-                                    <Button type="button" onClick={()=>navigate(`/property/edit/${property._id}`)}>Edit</Button>
+                                    <Button type="button" onClick={()=>navigate(`/properties/property/edit/${property._id}`)}>Edit</Button>
                                     <Button type="button" onClick={() => handleDelete(property._id)} className="bg-red-600 hover:bg-red-700">Delete</Button>
-                                </div>
+                                   </div>
                                 }
-                                
+                                {/* {user?.role === "tenant" && */}
+                                    <Button to="/chat" type="button" className="mt-4 text-center">Chat with Landlord</Button>
+                                {/* } */}
                             </div>
                             ))}
                         </div>

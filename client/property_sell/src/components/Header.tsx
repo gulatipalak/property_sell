@@ -1,5 +1,5 @@
 
-import {  useContext } from "react";
+import {  useContext, useEffect } from "react";
 
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -12,27 +12,26 @@ const Header = () => {
 
     const handleLogout = () => {
         localStorage.removeItem("token");
-        localStorage.removeItem("role");
         toast.success("Logged out Successfully!");
         setUser(null);
         setTimeout( () => navigate("/login"),3000);
     }
+
+    // Debugging: Track user state updates
+    useEffect(() => {
+        console.log("Updated user state after logout:", user);
+    }, [user]);
     return (
         <>
         <ToastContainer/>
-        <div className="flex justify-between items-center bg-blue-800 pr-6 py-4">
-            <h2 className="text-xl font-semibold text-white">Dashboard</h2>
-            <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                    <span className="font-medium text-white">{user?.username ?? "Guest"}</span>
-                </div>
-                <button
-                    onClick={handleLogout}
-                    className="bg-blue-900 px-4 py-2 text-white font-bold rounded-md hover:bg-gray-600 transition"
-                >
-                    Logout
-                </button>
-            </div>
+        <div className="flex items-center gap-4 justify-end bg-blue-800 pr-6 py-4">
+            <div className="font-medium text-white">{user?.username ?? "Guest"}</div>
+            <button
+                onClick={handleLogout}
+                className="bg-blue-900 px-4 py-2 text-white font-bold rounded-md hover:bg-gray-600 transition"
+            >
+                Logout
+            </button> 
         </div>
         </>
     )
