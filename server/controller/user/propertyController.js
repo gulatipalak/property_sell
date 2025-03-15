@@ -3,8 +3,8 @@ const {uploadToCloudinary}  = require("../../utils/cloudinary");
 
 exports.addProperty = async (req,res) => {
     try {
-        console.log("Received file:", req.file);
-        console.log("Received body:", req.body);
+        // console.log("Received file:", req.file);
+        // console.log("Received body:", req.body);
         const {property_name, postingFor, price, type, location , area, bedrooms, bathrooms, contact, amenities, furnished} = req.body;
         const user = req.user
         // console.log(user,"user")
@@ -130,6 +130,12 @@ exports.updateProperty = async (req,res) => {
 
         if (!property_id) {
             return res.status(400).json({ status: false, code: 400, message: "Property ID is required!" });
+        }
+
+        let imageUrl = null;
+        if (req.file) {
+          // Upload image to Cloudinary
+          imageUrl = await uploadToCloudinary(req.file.buffer);
         }
 
         const property = await propertyModel.findByIdAndUpdate(property_id, formData,{new: true});
