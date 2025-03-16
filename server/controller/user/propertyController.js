@@ -52,7 +52,6 @@ exports.addProperty = async (req,res) => {
 exports.getMyProperties = async (req,res) =>{
     try {
         const user = req.user;
-        console.log(user.role);
 
         let properties = [];
         if(user.role === "landlord") {
@@ -64,13 +63,10 @@ exports.getMyProperties = async (req,res) =>{
                 //model:"user",
             select:"username"
             }).sort("-createdAt")
-            console.log("landlord properties" ,properties);
+
         } else if (user.role === "tenant") {
             properties = await propertyModel.find();
-            console.log("tenant properties" ,properties);
         }
-
-        console.log("properties: ",properties);
       
 
         if(properties.length === 0) {
