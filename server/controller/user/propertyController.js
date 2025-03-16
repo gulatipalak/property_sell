@@ -143,9 +143,11 @@ exports.updateProperty = async (req,res) => {
         if (req.file) {
           // Upload image to Cloudinary
           imageUrl = await uploadToCloudinary(req.file.buffer);
+          console.log(imageUrl);
         }
 
-        const property = await propertyModel.findByIdAndUpdate(property_id, formData,{new: true});
+        const property = await propertyModel.findByIdAndUpdate(property_id, {formData,image:imageUrl},{new: true});
+        console.log(property);
         return res.status(200).json({status: true, code: 200, message:"Property Updated Successfully!", data:{property: property}});
 
     } catch(error) {
