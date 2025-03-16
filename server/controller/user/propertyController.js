@@ -52,15 +52,26 @@ exports.addProperty = async (req,res) => {
 exports.getMyProperties = async (req,res) =>{
     try {
         const user = req.user;
+        console.log(user.role);
 
-        const properties = await propertyModel.find({
-            userId : user.id
-        }).select("-userId")
-        .populate({ 
-            path:"userId",
-            //model:"user",
-           select:"username"
-        }).sort("-createdAt")
+        let properties = [];
+        if(user.role === "landlord") {
+            properties = await propertyModel.find({
+                userId : user.id
+            }).select("-userId")
+            .populate({ 
+                path:"userId",
+                //model:"user",
+            select:"username"
+            }).sort("-createdAt")
+            console.log("landlord properties" ,properties);
+        } else if (user.role === "tenant") {
+            properties = await propertyModel.find();
+            console.log("tenant properties" ,properties);
+        }
+
+        console.log("properties: ",properties);
+      
 
         if(properties.length === 0) {
             return res.status(404).json({
