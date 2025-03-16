@@ -3,17 +3,12 @@ const {uploadToCloudinary}  = require("../../utils/cloudinary");
 
 exports.addProperty = async (req,res) => {
     try {
-        // console.log("Received file:", req.file);
-        // console.log("Received body:", req.body);
         const {property_name, postingFor, price, type, location , area, bedrooms, bathrooms, contact, amenities, furnished} = req.body;
         const user = req.user
-        // console.log(user,"user")
 
         if(!property_name || !postingFor || !area || !price || !contact) {
             return res.status(400).json({status: false, code: 400, message: "Please Fill All Required Fields"});
         }
-        // console.log("userId",user.id)
-        
 
         let imageUrl = null;
         if (req.file) {
@@ -38,8 +33,6 @@ exports.addProperty = async (req,res) => {
             image: imageUrl,
         });
 
-        // console.log(newProperty,"new")
-
         await newProperty.save();
         return res.status(200).json({status: true, code: 200, message: "Property Added Successfully!"});
     }
@@ -52,7 +45,6 @@ exports.addProperty = async (req,res) => {
 exports.getMyProperties = async (req,res) =>{
     try {
         const user = req.user;
-        console.log(user.role);
 
         let properties = [];
         if(user.role === "landlord") {
@@ -64,13 +56,10 @@ exports.getMyProperties = async (req,res) =>{
                 //model:"user",
             select:"username"
             }).sort("-createdAt")
-            console.log("landlord properties" ,properties);
+
         } else if (user.role === "tenant") {
             properties = await propertyModel.find();
-            console.log("tenant properties" ,properties);
         }
-
-        console.log("properties: ",properties);
       
 
         if(properties.length === 0) {
@@ -137,8 +126,6 @@ exports.updateProperty = async (req,res) => {
         const property_id = req.body.property_id;
         const {...formData} = req.body;
 
-        console.log("update property data:" ,req.body);
-
         if (!property_id) {
             return res.status(400).json({ status: false, code: 400, message: "Property ID is required!" });
         }
@@ -149,7 +136,7 @@ exports.updateProperty = async (req,res) => {
           imageUrl = await uploadToCloudinary(req.file.buffer);
         }
 
-        const property = await propertyModel.findByIdAndUpdate(property_id, formData,{new: true});
+        const property = await propertyModel.findByIdAndUpdate(property_id, {formData,image:imageUrl},{new: true});
         return res.status(200).json({status: true, code: 200, message:"Property Updated Successfully!", data:{property: property}});
 
     } catch(error) {

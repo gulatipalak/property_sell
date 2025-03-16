@@ -45,7 +45,6 @@ const PropertiesList = () => {
                     headers:{Authorization: `Bearer ${token}`}
                 })
                 const fetchedProperties = response.data.data.properties || [];
-                console.log(response);
                 setIsLoading(false);
                 setProperties(fetchedProperties);
                 

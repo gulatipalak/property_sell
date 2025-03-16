@@ -117,7 +117,6 @@ const AddProperty = () => {
           return;
         }
 
-        
         // console.log("Checking FormData:");
         // for (const pair of formDataToSend.entries()) {
         //     console.log(`${pair[0]}:`, pair[1]); // Logs key-value pairs
