@@ -19,11 +19,12 @@ export const UserContext = createContext<UserContextType | null>(null);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
+    const token = localStorage.getItem("token");
 
     useEffect(() => {   
         const fetchUser = async () => {
             try {
-                const token = localStorage.getItem("token");
+                
                 if (!token) return;
     
                 const response = await axios.get(`${APP_URL}/api/v1/user/get-profile`, {
@@ -31,18 +32,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                 });
 
                 setUser(response.data.data);
-                console.log("user",response.data.data);
-                // console.log("user",user);
             } catch (error) {
                 console.error("Failed to fetch user data:", error);
             }
         };
         fetchUser();
-    }, []);
-
-    useEffect(() => {
-        console.log("Updated user state:", user); // ✅ Now logs updated state
-    }, [user]); 
+    }, [token]);
 
     return (
         <UserContext.Provider value={{ user, setUser }}>

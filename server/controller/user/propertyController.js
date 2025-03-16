@@ -52,15 +52,26 @@ exports.addProperty = async (req,res) => {
 exports.getMyProperties = async (req,res) =>{
     try {
         const user = req.user;
+        console.log(user.role);
 
-        const properties = await propertyModel.find({
-            userId : user.id
-        }).select("-userId")
-        .populate({ 
-            path:"userId",
-            //model:"user",
-           select:"username"
-        }).sort("-createdAt")
+        let properties = [];
+        if(user.role === "landlord") {
+            properties = await propertyModel.find({
+                userId : user.id
+            }).select("-userId")
+            .populate({ 
+                path:"userId",
+                //model:"user",
+            select:"username"
+            }).sort("-createdAt")
+            console.log("landlord properties" ,properties);
+        } else if (user.role === "tenant") {
+            properties = await propertyModel.find();
+            console.log("tenant properties" ,properties);
+        }
+
+        console.log("properties: ",properties);
+      
 
         if(properties.length === 0) {
             return res.status(404).json({
@@ -123,10 +134,10 @@ exports.getProperty = async (req,res) => {
 
 exports.updateProperty = async (req,res) => {
     try {
-        const property_id = req.body._id;
+        const property_id = req.body.property_id;
         const {...formData} = req.body;
 
-        console.log(property_id);
+        console.log("update property data:" ,req.body);
 
         if (!property_id) {
             return res.status(400).json({ status: false, code: 400, message: "Property ID is required!" });

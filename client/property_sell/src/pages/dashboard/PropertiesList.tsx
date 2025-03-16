@@ -45,6 +45,7 @@ const PropertiesList = () => {
                     headers:{Authorization: `Bearer ${token}`}
                 })
                 const fetchedProperties = response.data.data.properties || [];
+                console.log(response);
                 setIsLoading(false);
                 setProperties(fetchedProperties);
                 
@@ -149,9 +150,9 @@ const PropertiesList = () => {
                                     <Button type="button" onClick={() => handleDelete(property._id)} className="bg-red-600 hover:bg-red-700">Delete</Button>
                                    </div>
                                 }
-                                {/* {user?.role === "tenant" && */}
-                                    <Button to="/chat" type="button" className="mt-4 text-center">Chat with Landlord</Button>
-                                {/* } */}
+                                {user?.role === "tenant" &&
+                                    <Button to="/chats" type="button" className="mt-4 text-center">Chat with Landlord</Button>
+                                }
                             </div>
                             ))}
                         </div>
