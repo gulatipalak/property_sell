@@ -123,10 +123,10 @@ exports.getProperty = async (req,res) => {
 
 exports.updateProperty = async (req,res) => {
     try {
-        const property_id = req.body._id;
+        const property_id = req.body.property_id;
         const {...formData} = req.body;
 
-        console.log(property_id);
+        console.log("update property data:" ,req.body);
 
         if (!property_id) {
             return res.status(400).json({ status: false, code: 400, message: "Property ID is required!" });

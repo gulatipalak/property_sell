@@ -150,7 +150,7 @@ const PropertiesList = () => {
                                    </div>
                                 }
                                 {/* {user?.role === "tenant" && */}
-                                    <Button to="/chat" type="button" className="mt-4 text-center">Chat with Landlord</Button>
+                                    <Button to="/chats" type="button" className="mt-4 text-center">Chat with Landlord</Button>
                                 {/* } */}
                             </div>
                             ))}

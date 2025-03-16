@@ -1,5 +1,5 @@
 
-import {  useContext, useEffect } from "react";
+import {  useContext } from "react";
 
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -14,13 +14,8 @@ const Header = () => {
         localStorage.removeItem("token");
         toast.success("Logged out Successfully!");
         setUser(null);
-        setTimeout( () => navigate("/login"),3000);
+        setTimeout( () => {navigate("/login")},3000);
     }
-
-    // Debugging: Track user state updates
-    useEffect(() => {
-        console.log("Updated user state after logout:", user);
-    }, [user]);
     return (
         <>
         <ToastContainer/>
