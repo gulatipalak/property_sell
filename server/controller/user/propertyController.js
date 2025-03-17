@@ -1,5 +1,4 @@
 const propertyModel = require("../../model/user/propertyModel");
-const {uploadToCloudinary}  = require("../../utils/cloudinary");
 
 exports.addProperty = async (req,res) => {
     try {
@@ -10,12 +9,9 @@ exports.addProperty = async (req,res) => {
             return res.status(400).json({status: false, code: 400, message: "Please Fill All Required Fields"});
         }
 
-        let imageUrl = null;
-        if (req.file) {
-          // Upload image to Cloudinary
-          imageUrl = await uploadToCloudinary(req.file.buffer);
-          console.log(imageUrl);
-        }
+
+        let imageUrl = req.file ? req.file.path : null;
+        // console.log(imageUrl);
 
         const newProperty = new propertyModel({
             userId:user.id,
@@ -130,12 +126,8 @@ exports.updateProperty = async (req,res) => {
             return res.status(400).json({ status: false, code: 400, message: "Property ID is required!" });
         }
 
-        let imageUrl = null;
-        if (req.file) {
-          // Upload image to Cloudinary
-          imageUrl = await uploadToCloudinary(req.file.buffer);
-        }
-
+        let imageUrl = req.file ? req.file.path : null;
+        
         const property = await propertyModel.findByIdAndUpdate(property_id, {formData,image:imageUrl},{new: true});
         return res.status(200).json({status: true, code: 200, message:"Property Updated Successfully!", data:{property: property}});
 
