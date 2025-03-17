@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { APP_URL } from "../app_url";
 
@@ -16,6 +16,7 @@ interface UserContextType {
 
 // ✅ Provide a default empty object to prevent `undefined` errors
 export const UserContext = createContext<UserContextType | null>(null);
+
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
@@ -44,4 +45,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             {children}
         </UserContext.Provider>
     );
+};
+
+// ✅ Create a Custom Hook for using the UserContext
+export const useUser = () => {
+    const context = useContext(UserContext);
+    if (!context) {
+        throw new Error("useUser must be used within a UserProvider");
+    }
+    return context;
 };

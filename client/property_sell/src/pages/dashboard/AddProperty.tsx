@@ -46,6 +46,15 @@ const AddProperty = () => {
 
     const file = e.target.files[0];
 
+      // Allowed file types
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+    if (!allowedTypes.includes(file.type)){
+        toast.error("Only JPG, PNG, JPEG and WEBP files are allowed!")
+        e.target.value ="";
+    }
+
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       image: file,
@@ -158,6 +167,11 @@ const AddProperty = () => {
         if (!token) {
           toast.error("Authentication error! Please log in.");
           return;
+        }
+
+        console.log("Checking FormData:");
+        for (const pair of formDataToSend.entries()) {
+            console.log(`${pair[0]}:`, pair[1]); // Logs key-value pairs
         }
 
         const response = await axios.post(
@@ -439,7 +453,7 @@ const AddProperty = () => {
                 <input
                   type="file"
                   id="uploadImage"
-                  accept="image/*"
+                  accept="image/png, image/jpeg, image/jpg, image/webp"
                   onChange={handleImageChange}
                   className="hidden"
                 />
