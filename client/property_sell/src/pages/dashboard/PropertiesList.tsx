@@ -1,4 +1,4 @@
-import { useState,useEffect, useContext } from "react";
+import { useState,useEffect } from "react";
 import PanelLayout from "../../layouts/PanelLayout";
 import { APP_URL } from "../../app_url";
 import axios from "axios";
@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { confirmDialog } from "../../components/common/confirm"; 
 import { ClipLoader } from "react-spinners";
 import Button from "../../components/Button";
-import { UserContext } from "../../context/UserContext";
+import { useUser } from "../../context/UserContext";
 interface Property {
     _id: string;
     property_name: string;
@@ -104,8 +104,7 @@ const PropertiesList = () => {
         }
     }
 
-    const context = useContext(UserContext) ?? {user: null, setUser: () => {}};
-    const {user} = context;
+    const {user} = useUser();
     return(
         <>
             <PanelLayout>

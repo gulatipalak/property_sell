@@ -1,13 +1,11 @@
 import PanelLayout from "../../layouts/PanelLayout";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SuccessModal from "../../components/SuccessModal";
 import Button from "../../components/Button";
-import { UserContext } from "../../context/UserContext";
+import { useUser } from "../../context/UserContext";
 
 const Dashboard = () => {
-  const context = useContext(UserContext) ?? {user: null, setUser: () => {} };
-
-  const {user} = context;
+  const {user} = useUser();
   const [showVerifiedSuccessModal, setVerifiedShowSuccessModal] = useState(false);
 
   useEffect(() => {

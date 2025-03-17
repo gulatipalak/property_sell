@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {Eye, EyeOff} from "lucide-react";
 import { toast } from "react-toastify";
@@ -8,7 +8,7 @@ import axios from "axios";
 import { APP_URL } from "../../app_url";
 import {requestNotificationPermission} from "../../firebase";
 import Button from "../../components/Button";
-import { UserContext } from "../../context/UserContext";
+import { useUser } from "../../context/UserContext";
 
 const Login = () => {
     const [formData,setFormData] = useState({
@@ -20,8 +20,7 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const navigate = useNavigate();
-     const context = useContext(UserContext) ?? { user: null, setUser: () => {} };
-    const { setUser } = context;
+    const { setUser } = useUser();
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setFormData({
         ...formData,

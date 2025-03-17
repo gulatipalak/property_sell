@@ -1,13 +1,9 @@
-
-import {  useContext } from "react";
-
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../context/UserContext";
+import { useUser } from "../context/UserContext";
 
 const Header = () => {
-    const context = useContext(UserContext) ?? { user: null, setUser: () => {} };
-    const { user, setUser } = context;
+    const { user, setUser } = useUser();
     const navigate = useNavigate();
 
     const handleLogout = () => {
