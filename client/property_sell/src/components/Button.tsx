@@ -21,7 +21,7 @@ const Button = ({children, disabled = false, type, onClick, to, className}:Butto
         )
     }
     return (
-        <button onClick={onClick} type={type} className={`w-full bg-blue-800 text-white py-2 hover:bg-blue-700 transition rounded-sm disabled:opacity-70 disabled:cursor-not-allowed ${className}`} disabled={disabled}>
+        <button onClick={onClick} type={type} className={`w-full bg-blue-800 text-white px-4 py-2 hover:bg-blue-700 transition rounded-sm cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed ${className}`} disabled={disabled}>
     {children}
     </button>
     );

@@ -6,6 +6,7 @@ import { APP_URL } from "../app_url";
 interface User {
     username: string;
     role: string;
+    email: string;
 }
 
 // Define Context Type
