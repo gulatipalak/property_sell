@@ -48,7 +48,7 @@ const ResetPassword = () => {
 
         try {
             const response = await axios.post(`${APP_URL}/api/v1/user/reset-password`,{email, password});
-            console.log (email);
+            // console.log (email);
             // console.log (response);
             toast.success(response.data.message || "Password reset successfully! Please login.");
             setTimeout(()=> {

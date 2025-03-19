@@ -277,3 +277,21 @@ exports.getProfile= async (req,res) => {
   }
 }
 
+exports.updateProfile = async (req,res) => {
+    try {
+      const {id} = req.user;
+      const formData = req.body;
+
+      const updateUser = await userModel.findByIdAndUpdate(id,formData,{new: true});
+
+      return res.status(200).json({
+        status: true,
+        code: 200,
+        message: "Profile Updated Successfully!",
+        data: updateUser,
+      })
+    }
+    catch (error) {
+      return res.status(500).json({status: false, code: 500, meassage: "Internal Server Error"});
+    }
+}

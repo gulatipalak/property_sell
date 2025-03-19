@@ -10,6 +10,7 @@ router.route("/login").post(authController.login);
 router.route("/forget-password").post(authController.forgetPassword);
 router.route("/reset-password").post(authController.resetPassword);
 router.route("/get-profile").get(verifyToken,authController.getProfile);
+router.route("/update-profile").patch(verifyToken,authController.updateProfile)
 
 module.exports = router;
 
