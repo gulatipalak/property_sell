@@ -1,12 +1,13 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { APP_URL } from "../app_url";
+import { APP_URL } from "../global_variables";
 
 // Define User Type
 interface User {
     username: string;
     role: string;
     email: string;
+    profile_photo: string | File | null;
 }
 
 // Define Context Type
