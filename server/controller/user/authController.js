@@ -287,7 +287,6 @@ exports.updateProfile = async (req,res) => {
       console.log("image_url",image_url);
       const updateUser = await userModel.findByIdAndUpdate(id,{formData,profile_photo: image_url},{new: true});
 
-
       return res.status(200).json({
         status: true,
         code: 200,
