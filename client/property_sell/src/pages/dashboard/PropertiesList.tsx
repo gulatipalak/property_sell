@@ -23,6 +23,7 @@ interface Property {
     price: string;
     approvalStatus: string;
     image: string;
+    userId: string;
 }
 
 const PropertiesList = () => {
@@ -48,7 +49,7 @@ const PropertiesList = () => {
                 setIsLoading(false);
                 setProperties(fetchedProperties);
                 
-                // console.log(response.data.data.properties);
+                console.log(response.data.data.properties);
             }
             catch (error:unknown) {
                 if(axios.isAxiosError(error)){
@@ -149,7 +150,7 @@ const PropertiesList = () => {
                                    </div>
                                 }
                                 {user?.role === "tenant" &&
-                                    <Button to="/chats" type="button" className="mt-4 text-center">Chat with Landlord</Button>
+                                    <Button to={`/chat/${property.userId}`} type="button" className="mt-4 text-center">Chat with Landlord</Button>
                                 }
                             </div>
                             ))}

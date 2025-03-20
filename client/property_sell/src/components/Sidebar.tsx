@@ -9,8 +9,8 @@ const Sidebar = () => {
       <nav className="sidebar-menu flex-1">
         <ul>
           {menuItems.map((item,index) => (
-            <li key={index} className={`px-[20px] py-[10px] hover:bg-blue-900 transition-all duration-300 ${location.pathname.startsWith(`/${item}`) ? "active" : ""}`}>
-            <Link to={`/${item}`} className="block capitalize">{item}</Link>
+            <li key={index} className={`hover:bg-blue-900 transition-all duration-300 ${location.pathname.startsWith(`/${item}`) ? "active" : ""}`}>
+            <Link to={`/${item}`} className="block capitalize px-[20px] py-[10px]">{item}</Link>
           </li>
            ))}
         </ul>
