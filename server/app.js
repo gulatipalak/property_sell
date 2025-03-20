@@ -3,6 +3,8 @@ const cors = require("cors");
 require("dotenv").config();
 const authRoutes = require("./routes/user/authRoutes")
 const landlordRoutes = require("./routes/user/landlordRoutes")
+const chatRoutes = require("./routes/chat/chatRoutes")
+
 //initialize express app
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +20,7 @@ app.get("/",(req,res)=>{
 })
 app.use("/api/v1/user",authRoutes);
 app.use("/api/v1/user/landlord",landlordRoutes);
+app.use("/api/v1/chat/",chatRoutes);
 
 app.listen(PORT,()=>{
     console.log(`Server is running at port ${PORT}`)

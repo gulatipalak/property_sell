@@ -1,11 +1,21 @@
 import Button from "./Button";
 
-const ChatWindow = () => {
+interface ChatWindowProps {
+    selectedUser: {
+        id: string;
+        name: string;
+        avatarUrl?: string;
+        lastMessage?: string;
+    } | null;
+    }
+      
+
+const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
         return(
             <div className="flex flex-col flex-1">
                     {/* Header */}
                     <div className="p-3 bg-blue-800 text-white font-semibold flex justify-between items-center rounded-t-lg">
-                        <span>User 1</span>
+                        <span>{selectedUser ? selectedUser.name : "Select a chat"}</span>
                     </div>
 
                     {/* Chat Messages */}
