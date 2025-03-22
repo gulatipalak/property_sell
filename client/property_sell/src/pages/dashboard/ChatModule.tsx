@@ -1,25 +1,57 @@
-import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import ChatSidebar from "../../components/ChatSidebar";
 import ChatWindow from "../../components/ChatWindow";
 import PanelLayout from "../../layouts/PanelLayout";
+import { APP_URL } from "../../app_url";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 interface User {
     id: string;
-    name: string;
-    avatarUrl?: string;
+    username: string;
   }
   
 const ChatModule = () => {
     const { userid } = useParams(); // Get selected user ID from URL
     const [selectedUser, setSelectedUser] = useState<User | null>(null); // Store selected user
-    // const navigate = useNavigate(); 
+    const navigate = useNavigate();
 
     // Function to handle user selection
     const handleUserSelect = (user: User) => {
         setSelectedUser(user);
-        // navigate(`/chat/${user.id}`); // Update URL with user ID
     };
+
+    // Fetch user data when `userid` changes
+    useEffect(() => {
+        if (userid) {
+            const fetchUser = async () => {
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    toast.error("Authentication error! Please log in.");
+                    navigate("/login");
+                    return;
+                }
+                try {
+                    const response = await axios.get(`${APP_URL}/api/v1/chat/get-user/${userid}`,{
+                        headers:{ Authorization: `Bearer ${token}`}
+                    })
+                    const fetcheduser = response.data.data;
+                    setSelectedUser(fetcheduser);
+                }
+                catch (error:unknown) {
+                    if(axios.isAxiosError(error)){
+                        console.log(error.response?.data.message || "No User Found");
+                    }
+                    else{
+                        console.log(error || "Something went wrong. Please try again later.");
+                    }
+                }
+               
+            }
+            fetchUser();
+        }
+    }, [userid]);
 
     if(userid) {
         return (

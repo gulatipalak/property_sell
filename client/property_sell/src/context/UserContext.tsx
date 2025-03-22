@@ -4,6 +4,7 @@ import { APP_URL } from "../app_url";
 
 // Define User Type
 interface User {
+    _id: string;
     username: string;
     role: string;
 }

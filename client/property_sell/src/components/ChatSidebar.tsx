@@ -3,23 +3,23 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { APP_URL } from "../app_url";
+import { useUser } from "../context/UserContext";
 interface User {
-    id: string;
+    _id: string;
     username: string;  // Instead of 'username'
-    avatarUrl?: string;
   }
   
-  interface ChatSidebarProps {
-    onUserSelect: (user: { id: string; name: string; avatarUrl?: string }) => void;
-  }
-  
-  
-  
+interface ChatSidebarProps {
+    onUserSelect: (user: { id: string; username: string; avatarUrl?: string }) => void;
+}
+
 
 const ChatSidebar = ({ onUserSelect }:ChatSidebarProps) => {
     const [users, setUsers] = useState<User[]>([]);
     const navigate = useNavigate();
+    const {user} = useUser();
     useEffect( () => {
+        const loggedInUserId = user?._id;
         const fetchUsers = async() => {
             try {
                 const token = localStorage.getItem("token");
@@ -33,28 +33,30 @@ const ChatSidebar = ({ onUserSelect }:ChatSidebarProps) => {
                     headers:{Authorization: `Bearer ${token}`}
                 })
                 const fetchedUsers = response.data.data || [];
-                setUsers(fetchedUsers);
-                console.log("fetchUsers",fetchedUsers);
+    
+                // Filtering out the logged-in user before setting state
+                const filteredUsers = fetchedUsers.filter((u: User) => u._id !== loggedInUserId);
+                setUsers(filteredUsers);
             }
             catch (error:unknown) {
                 if(axios.isAxiosError(error)){
                     if (error.response?.status === 404) {
-                        console.log(error.response.data.message || "No Users Found");
+                        console.log(error.response.data.message || "No User Found");
                     }
                 }
-                else{
+                else {
                     console.log(error || "Something went wrong. Please try again later.");
                 }
             }
         }   
         fetchUsers();
-    },[]); 
+    },[[user?._id]]); 
     return (
         <div className="w-1/4 border-r bg-gray-100 p-3 rounded-l-lg overflow-y-auto">
                     <h2 className="font-semibold text-lg mb-3">Chats</h2>
                     <ul className="space-y-2">
                     {users.map((user) => (
-                        <li className="flex items-center p-2 rounded-lg shadow bg-white cursor-pointer hover:bg-gray-200 transition-all" onClick={() => onUserSelect({ id: user.id, name: user.username, avatarUrl: user.avatarUrl })}
+                        <li className="flex items-center p-2 rounded-lg shadow bg-white cursor-pointer hover:bg-gray-200 transition-all" onClick={() => onUserSelect({ id: user._id, username: user.username})}
 
 >
                             <img src="https://i.pravatar.cc/40?img=1" alt="User 1" className="w-10 h-10 rounded-full mr-3" />

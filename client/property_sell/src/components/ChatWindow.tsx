@@ -3,7 +3,7 @@ import Button from "./Button";
 interface ChatWindowProps {
     selectedUser: {
         id: string;
-        name: string;
+        username: string;
         avatarUrl?: string;
         lastMessage?: string;
     } | null;
@@ -15,7 +15,7 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
             <div className="flex flex-col flex-1">
                     {/* Header */}
                     <div className="p-3 bg-blue-800 text-white font-semibold flex justify-between items-center rounded-t-lg">
-                        <span>{selectedUser ? selectedUser.name : "Select a chat"}</span>
+                        <span>{selectedUser ? selectedUser.username : "Select a chat"}</span>
                     </div>
 
                     {/* Chat Messages */}
