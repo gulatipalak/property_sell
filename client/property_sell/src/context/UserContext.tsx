@@ -7,6 +7,7 @@ interface User {
     _id: string;
     username: string;
     role: string;
+    email: string;
 }
 
 // Define Context Type

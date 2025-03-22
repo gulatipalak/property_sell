@@ -12,6 +12,7 @@ import AddProperty from "./pages/dashboard/AddProperty";
 import PropertiesList from "./pages/dashboard/PropertiesList";
 import Unauthorized from "./pages/Unauthorized";
 import ChatModule from "./pages/dashboard/ChatModule";
+import MyAccount from "./pages/dashboard/MyAccount";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/properties" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><PropertiesList/></ProtectedRoute>}/>
         <Route path="/chat/:userid" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><ChatModule/></ProtectedRoute>}/>
         <Route path="/chats" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><ChatModule/></ProtectedRoute>}/>
+        <Route path="/my-account" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><MyAccount/></ProtectedRoute>}/>
       </Routes>
     </Router>
   )
