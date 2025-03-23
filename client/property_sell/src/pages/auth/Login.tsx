@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {Link, useNavigate} from "react-router-dom";
-import {Eye, EyeOff} from "lucide-react";
+import {Eye, EyeOff, User} from "lucide-react";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import AuthLayout from "../../layouts/AuthLayout";
@@ -54,11 +54,12 @@ const Login = () => {
       try {
         const response = await axios.post(`${APP_URL}/api/v1/user/login`,formData);
         localStorage.setItem("token",response.data.token);
-        setUser(response.data.user); 
+        setUser(response.data.data);
+        console.log("login console:",User);
+        console.log("login console response:",response.data.data);
         requestNotificationPermission();
         navigate("/dashboard");
         setLoading(false);
-
       } catch (error: unknown) {
         if (axios.isAxiosError(error)){
           if(error.response?.data.code == 400) {

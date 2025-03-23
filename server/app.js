@@ -21,19 +21,25 @@ const io = new Server(server, {
   });
 
 
+
 // Listen for new client connections
 io.on("connection", (socket) => {
-    console.log("A user connected:", socket.id); // Log when a user connects
+    console.log("New client connected:", socket.id); // Log when a user connects
   
     // Listen for a 'user-login' event from frontend
-    socket.on("user-login", (userId) => {
-      console.log(`User logged in: ${userId}`);
-      socket.join(userId); // The user joins a unique room with their user ID
+    socket.on("user-login", (userId, username) => {
+      console.log(`User logged in: ${userId} ${username}`);
+      socket.emit("user-login",socket.id);
+      //socket.join(userId); // The user joins a unique room with their user ID
     });
   
     // Handle user disconnection
     socket.on("disconnect", () => {
-      console.log("User disconnected:", socket.id);
+        console.log(`User disconnected (Socket id): ${socket.id}`);
+      });
+    socket.on("user-disconnect", (userId, username) => {
+      console.log(`User disconnected (user id): ${userId}`);
+      console.log(`User disconnected (user name): ${username}`);
     });
   });
 

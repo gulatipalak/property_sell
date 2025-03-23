@@ -15,7 +15,7 @@ const Sidebar = () => {
         <ul>
           {menuItems.map((item,index) => (
             <li key={index} className={`hover:bg-blue-900 transition-all duration-300 ${location.pathname.startsWith(`/${item}`) ? "active" : ""}`}>
-            <Link to={`/${item}`} className="block capitalize px-[20px] py-[10px]">{item.label}</Link>
+            <Link to={`/${item.path}`} className="block capitalize px-[20px] py-[10px]">{item.label}</Link>
           </li>
            ))}
         </ul>
