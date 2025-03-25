@@ -6,7 +6,7 @@ import Button from "./Button";
 import { useUser } from "../context/UserContext";
 
 interface ChatWindowProps {
-    selectedUser: {
+    selectedUser?: {
         _id: string;
         username: string;
     } | null;

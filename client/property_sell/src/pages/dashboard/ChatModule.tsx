@@ -70,7 +70,7 @@ const ChatModule = () => {
             <PanelLayout>
                 <div className="flex h-[500px] w-full border rounded-lg shadow-lg bg-white">
                     <ChatSidebar onUserSelect={handleUserSelect} />
-                    <ChatWindow selectedUser={selectedUser} />
+                    <ChatWindow/>
                 </div>
             </PanelLayout>
         );
