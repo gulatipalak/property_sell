@@ -20,17 +20,23 @@ const io = new Server(server, {
     }
   });
 
-
+const users = {};
 
 // Listen for new client connections
 io.on("connection", (socket) => {
     console.log("New client connected:", socket.id); // Log when a user connects
+
+     // Save user connection
+    socket.on("join", (userId) => {
+      users[userId] = socket.id;
+      console.log(`User ${userId} connected with socket ID ${socket.id}`);
+    });
   
     // Listen for a 'user-login' event from frontend
     socket.on("user-login", (userId, username) => {
       console.log(`User logged in: ${userId} ${username}`);
       socket.emit("user-login",socket.id);
-      //socket.join(userId); // The user joins a unique room with their user ID
+      socket.join(userId); // The user joins a unique room with their user ID
     });
   
     // Handle user disconnection
@@ -54,7 +60,7 @@ app.get("/",(req,res)=>{
 })
 app.use("/api/v1/user",authRoutes);
 app.use("/api/v1/user/landlord",landlordRoutes);
-app.use("/api/v1/chat/",chatRoutes);
+app.use("/api/v1/chat",chatRoutes);
 
 server.listen(PORT,()=>{
     console.log(`Server is running at port ${PORT}`)

@@ -8,23 +8,24 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 interface User {
-    id: string;
+    _id: string;
     username: string;
   }
   
 const ChatModule = () => {
-    const { userid } = useParams(); // Get selected user ID from URL
+    const { selectedUserId } = useParams(); // Get selected user ID from URL
     const [selectedUser, setSelectedUser] = useState<User | null>(null); // Store selected user
     const navigate = useNavigate();
 
     // Function to handle user selection
     const handleUserSelect = (user: User) => {
-         setSelectedUser(user);
+        setSelectedUser(user);
+        // console.log("selectedUser",user);
     };
 
     // Fetch user data when `userid` changes
     useEffect(() => {
-        if (userid) {
+        if (selectedUserId) {
             const fetchUser = async () => {
                 const token = localStorage.getItem("token");
                 if (!token) {
@@ -33,11 +34,12 @@ const ChatModule = () => {
                     return;
                 }
                 try {
-                    const response = await axios.get(`${APP_URL}/api/v1/chat/get-user/${userid}`,{
+                    const response = await axios.get(`${APP_URL}/api/v1/chat/get-user/${selectedUserId}`,{
                         headers:{ Authorization: `Bearer ${token}`}
                     })
                     const fetcheduser = response.data.data;
                     setSelectedUser(fetcheduser);
+                    // console.log("fetched user:",fetcheduser)
                 }
                 catch (error:unknown) {
                     if(axios.isAxiosError(error)){
@@ -51,9 +53,9 @@ const ChatModule = () => {
             }
             fetchUser();
         }
-    }, [userid]);
+    }, [selectedUserId]);
 
-    if(userid) {
+    if(selectedUserId) {
         return (
             <PanelLayout>
                 <div className="flex h-[500px] w-full border rounded-lg shadow-lg bg-white">

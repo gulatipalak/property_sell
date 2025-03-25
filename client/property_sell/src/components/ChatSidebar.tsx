@@ -6,11 +6,11 @@ import { APP_URL } from "../app_url";
 import { useUser } from "../context/UserContext";
 interface User {
     _id: string;
-    username: string;  // Instead of 'username'
+    username: string; 
   }
   
 interface ChatSidebarProps {
-    onUserSelect: (user: { id: string; username: string; avatarUrl?: string }) => void;
+    onUserSelect: (user: { _id: string; username: string;}) => void;
 }
 
 
@@ -50,13 +50,13 @@ const ChatSidebar = ({ onUserSelect }:ChatSidebarProps) => {
             }
         }   
         fetchUsers();
-    },[[user?._id]]); 
+    },[]); 
     return (
         <div className="w-1/4 border-r bg-gray-100 p-3 rounded-l-lg overflow-y-auto">
                     <h2 className="font-semibold text-lg mb-3">Chats</h2>
                     <ul className="space-y-2">
                     {users.map((user) => (
-                        <li className="flex items-center p-2 rounded-lg shadow bg-white cursor-pointer hover:bg-gray-200 transition-all" onClick={() => onUserSelect({ id: user._id, username: user.username})}
+                        <li className="flex items-center p-2 rounded-lg shadow bg-white cursor-pointer hover:bg-gray-200 transition-all" onClick={() => onUserSelect({ _id: user._id, username: user.username})}
 
 >
                             <img src="https://i.pravatar.cc/40?img=1" alt="User 1" className="w-10 h-10 rounded-full mr-3" />

@@ -30,7 +30,7 @@ function App() {
         <Route path="/properties/property/:type" element={<ProtectedRoute allowedRoles={["landlord"]}><AddProperty/></ProtectedRoute>}/>
         <Route path="/properties/property/:type/:propertyid" element={<ProtectedRoute allowedRoles={["landlord"]}><AddProperty/></ProtectedRoute>}/>
         <Route path="/properties" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><PropertiesList/></ProtectedRoute>}/>
-        <Route path="/chat/:userid" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><ChatModule/></ProtectedRoute>}/>
+        <Route path="/chat/:selectedUserId" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><ChatModule/></ProtectedRoute>}/>
         <Route path="/chats" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><ChatModule/></ProtectedRoute>}/>
         <Route path="/my-account" element={<ProtectedRoute allowedRoles={["landlord","tenant"]}><MyAccount/></ProtectedRoute>}/>
       </Routes>
