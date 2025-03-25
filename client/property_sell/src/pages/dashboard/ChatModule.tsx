@@ -20,7 +20,6 @@ const ChatModule = () => {
     // Function to handle user selection
     const handleUserSelect = (user: User) => {
         setSelectedUser(user);
-        // console.log("selectedUser",user);
     };
 
     // Fetch user data when `userid` changes

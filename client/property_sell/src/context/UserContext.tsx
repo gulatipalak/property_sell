@@ -51,25 +51,23 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         // ✅ Establish WebSocket connection when user is logged in
         // console.log("Console get profile 1: ",user);
         if (user) {
+        
             const socket = io(APP_URL);
-
+            
             setSocket(socket);
 
             socket.emit("user-login", user._id, user.username);
+
+            socket.emit("join", user._id);
 
             socket.on("user-login", () => {
                 console.log("Connected to WebSocket:", socket.id);
                 console.log("Connected to User id:", user._id, user.username);
             });
 
-            socket.on("disconnect", () => {
-                console.log("Disconnected to WebSocket:", socket.id);
-                console.log("Disconnected to User id:", user._id,user.username);
-            });
-
             return () => {
                 socket.emit("user-disconnect", user._id, user.username);
-                socket.disconnect();
+                // socket.disconnect(user._id);
             };
         }
     }, [user]);
