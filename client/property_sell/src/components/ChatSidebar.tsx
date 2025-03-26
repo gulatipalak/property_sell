@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { APP_URL } from "../app_url";
 import { useUser } from "../context/UserContext";
+import { User } from "lucide-react";
 interface User {
     _id: string;
     username: string; 
@@ -16,6 +17,7 @@ interface ChatSidebarProps {
 
 const ChatSidebar = ({ onUserSelect }:ChatSidebarProps) => {
     const [users, setUsers] = useState<User[]>([]);
+    const [selectedUser, setSelectedUser] =useState<User | null>(null);
     const navigate = useNavigate();
     const {user} = useUser();
     useEffect( () => {
@@ -37,6 +39,11 @@ const ChatSidebar = ({ onUserSelect }:ChatSidebarProps) => {
                 // Filtering out the logged-in user before setting state
                 const filteredUsers = fetchedUsers.filter((u: User) => u._id !== loggedInUserId);
                 setUsers(filteredUsers);
+
+                if(filteredUsers.length !== 0) {
+                        setSelectedUser(filteredUsers[0]);
+                        onUserSelect(filteredUsers[0]);
+                }
             }
             catch (error:unknown) {
                 if(axios.isAxiosError(error)){
@@ -50,13 +57,13 @@ const ChatSidebar = ({ onUserSelect }:ChatSidebarProps) => {
             }
         }   
         fetchUsers();
-    },[]); 
+    },[]);
     return (
         <div className="w-1/4 border-r bg-gray-100 p-3 rounded-l-lg overflow-y-auto">
                     <h2 className="font-semibold text-lg mb-3">Chats</h2>
                     <ul className="space-y-2">
                     {users.map((user) => (
-                        <li className="flex items-center p-2 rounded-lg shadow bg-white cursor-pointer hover:bg-gray-200 transition-all" onClick={() => onUserSelect({ _id: user._id, username: user.username})}
+                        <li className={`flex items-center p-2 rounded-lg shadow cursor-pointer hover:bg-gray-200 transition-all ${selectedUser?._id === user._id ? "bg-gray-200" : "bg-white"}`} onClick={() => {onUserSelect({ _id: user._id, username: user.username});setSelectedUser(user);}}
 
 >
                             <img src="https://i.pravatar.cc/40?img=1" alt="User 1" className="w-10 h-10 rounded-full mr-3" />
