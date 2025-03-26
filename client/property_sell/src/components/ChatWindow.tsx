@@ -28,7 +28,7 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
 
     const handleSend = async (selectedUserId: string) => {
         try {
-            const token = localStorage.getItem("token");
+            const token = sessionStorage.getItem("token");
             if (!token) {
                 toast.error("Authentication error! Please log in.");
                 return;
@@ -53,7 +53,7 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
         if (selectedUser?._id) {
             const fetchMessages = async () => {
                 try {
-                    const token = localStorage.getItem("token");
+                    const token = sessionStorage.getItem("token");
                     if (!token) {
                         toast.error("Authentication error! Please log in.");
                         return;

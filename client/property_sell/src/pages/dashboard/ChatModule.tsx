@@ -26,7 +26,7 @@ const ChatModule = () => {
     useEffect(() => {
         if (selectedUserId) {
             const fetchUser = async () => {
-                const token = localStorage.getItem("token");
+                const token = sessionStorage.getItem("token");
                 if (!token) {
                     toast.error("Authentication error! Please log in.");
                     navigate("/login");

@@ -25,7 +25,7 @@ export const UserContext = createContext<UserContextType | null>(null);
 export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [socket, setSocket] = useState<Socket | null>(null);
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
 
     useEffect(() => {   
         const fetchUser = async () => {

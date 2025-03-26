@@ -35,7 +35,7 @@ const PropertiesList = () => {
     useEffect( () => {
         const fetchProperties = async() => {
             try {
-                const token = localStorage.getItem("token");
+                const token = sessionStorage.getItem("token");
                 if (!token) {
                     toast.error("Authentication error! Please log in.");
                     navigate("/login");
@@ -71,7 +71,7 @@ const PropertiesList = () => {
         const result = await confirmDialog("Are you sure you want to delete this property?");
         if (result) {
             try {
-                const token = localStorage.getItem("token");
+                const token = sessionStorage.getItem("token");
                 if (!token) {
                     toast.error("Authentication error! Please log in.");
                     navigate("/login");

@@ -9,7 +9,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     const context = useContext(UserContext);
     const [loading, setLoading] = useState(true);
 

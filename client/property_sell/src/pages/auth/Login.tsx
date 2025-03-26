@@ -53,7 +53,7 @@ const Login = () => {
 
       try {
         const response = await axios.post(`${APP_URL}/api/v1/user/login`,formData);
-        localStorage.setItem("token",response.data.token);
+        sessionStorage.setItem("token",response.data.token);
         setUser(response.data.data);
         requestNotificationPermission();
         navigate("/dashboard");

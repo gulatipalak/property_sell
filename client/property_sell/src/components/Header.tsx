@@ -7,7 +7,7 @@ const Header = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
         toast.success("Logged out Successfully!");
         setUser(null);
         setTimeout( () => {navigate("/login")},3000);
