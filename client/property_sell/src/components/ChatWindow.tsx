@@ -73,18 +73,19 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
         }
     }, [selectedUser?._id]);
 
-    // ✅ Real-time message listener
+    //✅ Real-time message listener
     useEffect(() => {
-        const handleNewMessage = (newMessage: Message) => {
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
-        };
-
-        socket?.on("newMessage", handleNewMessage);
-
+        socket?.on("newMessage", (newMessage) => {
+            if (newMessage.senderId === selectedUser?._id) {
+              // ✅ Update the chat only if the sender matches the currently selected user
+              setMessages((prevMessages) => [...prevMessages, newMessage]);
+            }
+          });
         return () => {
-            socket?.off("newMessage", handleNewMessage);
+            socket?.off("newMessage");
         };
-    }, [socket]);
+        
+    }, [selectedUser]);
 
     return (
         <div className="flex flex-col flex-1">

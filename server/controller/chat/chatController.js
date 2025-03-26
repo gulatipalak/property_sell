@@ -78,7 +78,7 @@ exports.sendMessage = async(req,res) => {
     const {text} = req.body;
     const receiverId = req.params.id;
 
-    console.log(senderId,text,receiverId)
+    console.log(`sender: ${senderId},text: ${text},receiver: ${receiverId}`)
 
     if (!text) {
       return res.status(400).json({ status: false, message: "Message content is required" });
@@ -93,8 +93,9 @@ exports.sendMessage = async(req,res) => {
     });
 
     await newMessage.save();
-    if (onlineUsers[receiverId]) {
-      io.to(onlineUsers[receiverId]).emit("newMessage", newMessage);
+    const receiverSocketId = onlineUsers[receiverId];
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("newMessage", newMessage);
     }
     return res.status(201).json({ status: true, message: "Message sent successfully", data: newMessage });
   } catch (error) {
