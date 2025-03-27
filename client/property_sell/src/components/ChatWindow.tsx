@@ -42,7 +42,7 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
             );
 
             setMessages((prevMessages) => [...prevMessages, response.data.data]);
-            socket?.emit("newMessage", response.data.data); 
+            // socket?.emit("newMessage", response.data.data); 
             setText("");
         } catch (error) {
             console.log(error);

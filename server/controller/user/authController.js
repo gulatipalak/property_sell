@@ -96,6 +96,7 @@ exports.verifyOTP = async (req,res) => {
       token,
       email,
       role: user.role,
+      data: user
     });
 
     } catch(error){
