@@ -96,6 +96,7 @@ exports.verifyOTP = async (req,res) => {
       token,
       email,
       role: user.role,
+      data: user
     });
 
     } catch(error){
@@ -164,8 +165,7 @@ exports.login = async (req,res) => {
       code: 200,
       message: "Login Successful!",
       token,
-      email,
-      role: user.role
+      data: user,
     });
   }
   catch(error){
@@ -272,7 +272,7 @@ exports.getProfile= async (req,res) => {
     message: "Profile retrieved successfully",
     data: user,
   });
-  }catch (error) {
+  } catch (error) {
     return res.status(500).json({status: false, code: 500, message: "Internal Server Error"});
   }
 }

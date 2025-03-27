@@ -23,6 +23,7 @@ interface Property {
     price: string;
     approvalStatus: string;
     image: string;
+    userId: string;
 }
 
 const PropertiesList = () => {
@@ -34,7 +35,7 @@ const PropertiesList = () => {
     useEffect( () => {
         const fetchProperties = async() => {
             try {
-                const token = localStorage.getItem("token");
+                const token = sessionStorage.getItem("token");
                 if (!token) {
                     toast.error("Authentication error! Please log in.");
                     navigate("/login");
@@ -48,7 +49,7 @@ const PropertiesList = () => {
                 setIsLoading(false);
                 setProperties(fetchedProperties);
                 
-                // console.log(response.data.data.properties);
+                console.log(response.data.data.properties);
             }
             catch (error:unknown) {
                 if(axios.isAxiosError(error)){
@@ -70,7 +71,7 @@ const PropertiesList = () => {
         const result = await confirmDialog("Are you sure you want to delete this property?");
         if (result) {
             try {
-                const token = localStorage.getItem("token");
+                const token = sessionStorage.getItem("token");
                 if (!token) {
                     toast.error("Authentication error! Please log in.");
                     navigate("/login");
@@ -149,7 +150,7 @@ const PropertiesList = () => {
                                    </div>
                                 }
                                 {user?.role === "tenant" &&
-                                    <Button to="/chats" type="button" className="mt-4 text-center">Chat with Landlord</Button>
+                                    <Button to={`/chat/${property.userId}`} type="button" className="mt-4 text-center">Chat with Landlord</Button>
                                 }
                             </div>
                             ))}

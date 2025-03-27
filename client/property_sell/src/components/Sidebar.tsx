@@ -14,8 +14,8 @@ const Sidebar = () => {
       <nav className="sidebar-menu flex-1">
         <ul>
           {menuItems.map((item,index) => (
-            <li key={index} className={`px-[20px] py-[10px] hover:bg-blue-900 transition-all duration-300 ${location.pathname.startsWith(`/${item.path}`) ? "active" : ""}`}>
-            <Link to={`/${item.path}`} className="block">{item.label}</Link>
+            <li key={index} className={`hover:bg-blue-900 transition-all duration-300 ${location.pathname.startsWith(`/${item}`) ? "active" : ""}`}>
+            <Link to={`/${item.path}`} className="block capitalize px-[20px] py-[10px]">{item.label}</Link>
           </li>
            ))}
         </ul>

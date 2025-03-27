@@ -1,9 +1,11 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { APP_URL } from "../app_url";
+import { io, Socket } from "socket.io-client";
 
 // Define User Type
 interface User {
+    _id: string;
     username: string;
     role: string;
     email: string;
@@ -13,6 +15,7 @@ interface User {
 interface UserContextType {
     user: User | null;
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
+    socket: Socket | null; 
 }
 
 // ✅ Provide a default empty object to prevent `undefined` errors
@@ -21,7 +24,8 @@ export const UserContext = createContext<UserContextType | null>(null);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
-    const token = localStorage.getItem("token");
+    const [socket, setSocket] = useState<Socket | null>(null);
+    const token = sessionStorage.getItem("token");
 
     useEffect(() => {   
         const fetchUser = async () => {
@@ -34,15 +38,42 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                 });
 
                 setUser(response.data.data);
+                console.log("Console get profile response: ",response.data.data);
             } catch (error) {
                 console.error("Failed to fetch user data:", error);
             }
         };
         fetchUser();
-    }, [token]);
+    }, []);
+
+    
+    useEffect(() => {
+        // ✅ Establish WebSocket connection when user is logged in
+        // console.log("Console get profile 1: ",user);
+        if (user) {
+        
+            const socket = io(APP_URL);
+            
+            setSocket(socket);
+
+            socket.emit("user-login", user._id, user.username);
+
+            socket.emit("join", user._id);
+
+            socket.on("user-login", () => {
+                console.log("Connected to WebSocket:", socket.id);
+                console.log("Connected to User id:", user._id, user.username);
+            });
+
+            return () => {
+                socket.emit("user-disconnect", user._id, user.username);
+                // socket.disconnect(user._id);
+            };
+        }
+    }, [user]);
 
     return (
-        <UserContext.Provider value={{ user, setUser }}>
+        <UserContext.Provider value={{ user, setUser, socket }}>
             {children}
         </UserContext.Provider>
     );

@@ -7,6 +7,7 @@ import axios from "axios";
 import { APP_URL } from "../../app_url";
 import AuthLayout from "../../layouts/AuthLayout";
 import Button from "../../components/Button";
+import { useUser } from "../../context/UserContext";
 
 const VerifyEmail = () => {
     const [isResendDisabled,setIsResendDisabled] = useState(true);
@@ -17,6 +18,7 @@ const VerifyEmail = () => {
     const location = useLocation();
     const {email, flowType} = location.state || "";
     const isNumeric = /^[0-9]+$/;
+    const { setUser } = useUser();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -50,20 +52,20 @@ const VerifyEmail = () => {
 
         try {
             const response = await axios.post(`${APP_URL}/api/v1/user/verify-otp`, formData);
-            localStorage.setItem("token",response.data.token);
+            sessionStorage.setItem("token",response.data.token);
             localStorage.setItem("role", response.data.role);
             toast.success(response.data.message || "OTP Verified Successfully!");
-
-            console.log(response,"response")
+            console.log("response:",response.data);
             if (flowType == "signup"){
                 setTimeout(() =>  {
                     navigate ("/dashboard");
+                    setUser(response.data);
                     localStorage.setItem("emailVerified","true");
                 }, 1000);
             } else if (flowType == "forget-password"){
                 setTimeout(() => navigate ("/reset-password",{state: {email: response.data.email}}), 1000);
             }
-            console.log("Response Data: ", response.data);
+            // console.log("Response Data: ", response.data);
 
         } catch (error: unknown) {
             console.log("Error:", error);

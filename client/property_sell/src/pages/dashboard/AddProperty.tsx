@@ -120,7 +120,7 @@ const AddProperty = () => {
 
     if (isEdit) {
       try {
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token");
         if (!token) {
           toast.error("Authentication error! Please log in.");
           return;
@@ -163,7 +163,7 @@ const AddProperty = () => {
       }
     } else {
       try {
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token");
         if (!token) {
           toast.error("Authentication error! Please log in.");
           return;
@@ -200,7 +200,7 @@ const AddProperty = () => {
 
   useEffect(() => {
     const fetchProperty = async () => {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       if (!token) {
         toast.error("Authentication error! Please log in.");

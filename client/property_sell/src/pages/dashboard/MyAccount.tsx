@@ -39,7 +39,7 @@ const MyAccount= () => {
         setIsLoading(true);
 
         const {username, email} = formData;
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token");
         
         if(!username?.trim() || !email?.trim()) {
             toast.error("All Field are Required");
