@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { APP_URL } from "../app_url";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Button from "./Button";
 import { useUser } from "../context/UserContext";
@@ -13,17 +13,22 @@ interface ChatWindowProps {
 }
 
 interface Message {
+    _id:string;
     text: string;
     senderId: string;
+    receiverId: string;
 }
 
 const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
     const [text, setText] = useState("");
     const [messages, setMessages] = useState<Message[]>([]);
     const { user, socket } = useUser();
+    const chatWindowRef = useRef<HTMLDivElement>(null);
+    const [typing, setTyping] = useState("");
 
     const handleText = (e: React.ChangeEvent<HTMLInputElement>) => {
         setText(e.target.value);
+        socket?.emit("typing",user?._id,user?.username,selectedUser?._id);
     };
 
     const handleSend = async (selectedUserId: string) => {
@@ -34,20 +39,23 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
                 return;
             }
             const response = await axios.post(
-                `${APP_URL}/api/v1/chat/send-message/${selectedUserId}`,
-                { text },
-                {
+                `${APP_URL}/api/v1/chat/send-message/${selectedUserId}`,{text},{
                     headers: { Authorization: `Bearer ${token}` },
                 }
             );
-
             setMessages((prevMessages) => [...prevMessages, response.data.data]);
-            // socket?.emit("newMessage", response.data.data); 
+            // console.log(response.data.data);
             setText("");
         } catch (error) {
             console.log(error);
         }
     };
+
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if(e.key === "Enter" && selectedUser?._id){
+            handleSend(selectedUser?._id)
+        }
+    }
 
     useEffect(() => {
         if (selectedUser?._id) {
@@ -76,16 +84,33 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
     //✅ Real-time message listener
     useEffect(() => {
         socket?.on("newMessage", (newMessage) => {
-            if (newMessage.senderId === selectedUser?._id) {
-              // ✅ Update the chat only if the sender matches the currently selected user
-              setMessages((prevMessages) => [...prevMessages, newMessage]);
+        if (newMessage.senderId === selectedUser?._id) {
+            // ✅ Update the chat only if the sender matches the currently selected user
+            setMessages((prevMessages) => [...prevMessages, newMessage]);
+        }
+        });
+        socket?.on("typing", (typingUserId,typingUsername) => {
+            // console.log("typingUserId",typingUserId,typingUsername);
+            // console.log("selectedUserId",selectedUser?._id);
+            if(typingUserId === selectedUser?._id){
+                setTyping(`${typingUserId} ${typingUsername} is typing`);
+            }else {
+                setTyping("");
             }
-          });
+        })
+        
         return () => {
             socket?.off("newMessage");
+            socket?.off("typing");
         };
         
-    }, [selectedUser]);
+    }, [selectedUser?._id,socket]);
+
+    useEffect(()=>{
+        if(chatWindowRef.current){
+            chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
+        }
+    },[messages,typing]);
 
     return (
         <div className="flex flex-col flex-1">
@@ -95,21 +120,22 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
             </div>
 
             {/* Chat Messages */}
-            <div className="flex-1 p-3 overflow-y-auto space-y-3">
+            <div ref={chatWindowRef} className="flex-1 p-3 overflow-y-auto space-y-3">
                 {messages.map((msg) => (
                     msg.senderId !== user?._id ? 
-                    <div key={msg.senderId + msg.text} className="flex items-start space-x-2">
+                    <div key={msg._id} className="flex items-start space-x-2">
                         <div className="bg-gray-200 p-2 rounded-lg max-w-[75%]">
                             <p className="text-sm">{msg.text}</p>
                         </div>
                     </div> 
                     : 
-                    <div key={msg.senderId + msg.text} className="flex justify-end">
+                    <div key={msg._id} className="flex justify-end">
                         <div className="bg-blue-800 text-white p-2 rounded-lg max-w-[75%]">
                             <p className="text-sm">{msg.text}</p>
                         </div>
                     </div>
                 ))}
+                {typing}
             </div>
 
             {/* Input Box */}
@@ -120,8 +146,9 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
                     value={text}
                     onChange={handleText}
                     className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-800"
+                    onKeyDown={handleKeyPress}
                 />
-                <Button className="w-auto! px-4" onClick={() => selectedUser && handleSend(selectedUser._id)}>Send</Button>
+                <Button className="w-auto! px-4" onClick={() => selectedUser && handleSend(selectedUser._id)} disabled={text.trim() == ""}>Send</Button>
             </div>
         </div>
     );

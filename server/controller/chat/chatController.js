@@ -1,11 +1,13 @@
 require("dotenv").config();
 const userModel = require("../../model/user/authModel")
 const messageModel = require("../../model/chat/messageModel")
-const {onlineUsers ,io} = require("../../lib/socket")
+const {getReceiverSocketId ,io} = require("../../lib/socket");
+const chatModel = require("../../model/chat/chatModel");
 
-exports.allUsers = async (req, res) => {
+exports.chatUsers = async (req, res) => {
   try {
-    const users = await userModel.find({}, "-password") ;
+    const myId = req.user.id;
+    const users = await chatModel.find({users:{$in:[myId]}}).populate({path: "users", select: "username"});
 
     if (users.length === 0) {
       return res.status(404).json({
@@ -78,22 +80,34 @@ exports.sendMessage = async(req,res) => {
     const {text} = req.body;
     const receiverId = req.params.id;
 
-    console.log(`sender: ${senderId},text: ${text},receiver: ${receiverId}`)
+    // console.log(`sender: ${senderId},text: ${text},receiver: ${receiverId}`)
 
     if (!text) {
       return res.status(400).json({ status: false, message: "Message content is required" });
     }
 
+    let chat = await chatModel.findOne({users:{$all:[senderId,receiverId]}});
+
+    if(!chat){
+        chat = new chatModel({
+          users:[senderId,receiverId]
+        })
+        await chat.save();
+    }
+
+    const chatId = chat._id;
+
     // Save the message
     const newMessage = new messageModel({
+      chatId: chatId,
       senderId: senderId,
       receiverId: receiverId,
       text,
-      timestamp: new Date()
     });
 
     await newMessage.save();
-    const receiverSocketId = onlineUsers[receiverId];
+
+    const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
