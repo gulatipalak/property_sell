@@ -16,6 +16,7 @@ interface UserContextType {
     user: User | null;
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
     socket: Socket | null; 
+    token: string | null;
 }
 
 // ✅ Provide a default empty object to prevent `undefined` errors
@@ -44,7 +45,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             }
         };
         fetchUser();
-    }, []);
+    }, [token]);
 
     
     useEffect(() => {
@@ -67,13 +68,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
             return () => {
                 socket.emit("user-disconnect", user._id, user.username);
-                // socket.disconnect(user._id);
             };
         }
     }, [user]);
 
     return (
-        <UserContext.Provider value={{ user, setUser, socket }}>
+        <UserContext.Provider value={{ user, setUser, socket, token}}>
             {children}
         </UserContext.Provider>
     );

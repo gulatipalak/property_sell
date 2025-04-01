@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Button from "./Button";
 import { useUser } from "../context/UserContext";
+import { debounce } from "lodash";
 
 interface ChatWindowProps {
     selectedUser: {
@@ -17,6 +18,7 @@ interface Message {
     text: string;
     senderId: string;
     receiverId: string;
+    isRead: boolean;
 }
 
 const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
@@ -24,11 +26,19 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
     const [messages, setMessages] = useState<Message[]>([]);
     const { user, socket } = useUser();
     const chatWindowRef = useRef<HTMLDivElement>(null);
-    const [typing, setTyping] = useState("");
+    const [isTyping, setIsTyping] = useState("");
+    // const [isRead, setIsRead] = useState(false);
+
+     // ✅ Debounce function to stop typing indicator
+     const stopTyping =
+            debounce(() => {
+                socket?.emit("stop-typing",user?._id,selectedUser?._id); // Clear typing indicator after delay
+            }, 2000);
 
     const handleText = (e: React.ChangeEvent<HTMLInputElement>) => {
         setText(e.target.value);
         socket?.emit("typing",user?._id,user?.username,selectedUser?._id);
+        stopTyping();
     };
 
     const handleSend = async (selectedUserId: string) => {
@@ -57,60 +67,65 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
         }
     }
 
+    const fetchMessages = async () => {
+        try {
+            const token = sessionStorage.getItem("token");
+            if (!token) {
+                toast.error("Authentication error! Please log in.");
+                return;
+            }
+            const response = await axios.get(
+                `${APP_URL}/api/v1/chat/${selectedUser?._id}`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                }
+            );
+            setMessages(response.data.messages);
+            socket?.emit("messages-read",user?._id,selectedUser?._id);
+        } catch (error) {
+            console.log("get chat error:", error);
+        }
+    };
+
     useEffect(() => {
         if (selectedUser?._id) {
-            const fetchMessages = async () => {
-                try {
-                    const token = sessionStorage.getItem("token");
-                    if (!token) {
-                        toast.error("Authentication error! Please log in.");
-                        return;
-                    }
-                    const response = await axios.get(
-                        `${APP_URL}/api/v1/chat/${selectedUser._id}`,
-                        {
-                            headers: { Authorization: `Bearer ${token}` },
-                        }
-                    );
-                    setMessages(response.data.messages);
-                } catch (error) {
-                    console.log("get chat error:", error);
-                }
-            };
             fetchMessages();
+            socket?.on("newMessage", (newMessage) => {
+                if (newMessage.senderId === selectedUser?._id) {
+                    // ✅ Update the chat only if the sender matches the currently selected user
+                    setMessages((prevMessages) => [...prevMessages, newMessage]);
+                }
+            });
+            socket?.on("typing", (typingUserId,typingUsername) => {
+                if(typingUserId === selectedUser?._id){
+                    setIsTyping(`${typingUsername} is typing...`);
+                }
+            })
+            socket?.on("stopped-typing",(typingUserId) => {
+                if(typingUserId === selectedUser?._id){
+                setIsTyping("");
+                }
+            });
+            socket?.on("read-marked", (readerId) => {
+                    console.log("readerId",readerId);
+                    if(readerId === selectedUser?._id) {
+                        fetchMessages();
+                    }
+            });
         }
-    }, [selectedUser?._id]);
-
-    //✅ Real-time message listener
-    useEffect(() => {
-        socket?.on("newMessage", (newMessage) => {
-        if (newMessage.senderId === selectedUser?._id) {
-            // ✅ Update the chat only if the sender matches the currently selected user
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
-        }
-        });
-        socket?.on("typing", (typingUserId,typingUsername) => {
-            // console.log("typingUserId",typingUserId,typingUsername);
-            // console.log("selectedUserId",selectedUser?._id);
-            if(typingUserId === selectedUser?._id){
-                setTyping(`${typingUserId} ${typingUsername} is typing`);
-            }else {
-                setTyping("");
-            }
-        })
-        
         return () => {
             socket?.off("newMessage");
             socket?.off("typing");
+            socket?.off("messages-read");
+            socket?.off("read-marked");
         };
-        
     }, [selectedUser?._id,socket]);
 
     useEffect(()=>{
         if(chatWindowRef.current){
             chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
         }
-    },[messages,typing]);
+    },[messages,isTyping]);
 
     return (
         <div className="flex flex-col flex-1">
@@ -122,20 +137,16 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
             {/* Chat Messages */}
             <div ref={chatWindowRef} className="flex-1 p-3 overflow-y-auto space-y-3">
                 {messages.map((msg) => (
-                    msg.senderId !== user?._id ? 
-                    <div key={msg._id} className="flex items-start space-x-2">
-                        <div className="bg-gray-200 p-2 rounded-lg max-w-[75%]">
+                    <div key={msg._id} className={`flex  space-x-2 ${msg.senderId !== user?._id ? "items-start" : "justify-end" }`}>
+                        <div className={` p-2 rounded-lg max-w-[75%] ${msg.senderId !== user?._id ? "bg-gray-200" : "bg-blue-800 text-white" }`}>
                             <p className="text-sm">{msg.text}</p>
-                        </div>
-                    </div> 
-                    : 
-                    <div key={msg._id} className="flex justify-end">
-                        <div className="bg-blue-800 text-white p-2 rounded-lg max-w-[75%]">
-                            <p className="text-sm">{msg.text}</p>
+                            {msg.senderId == user?._id &&
+                                <div className={`${msg.isRead ? "text-green-600" : "text-red-500"}`}>{msg.isRead ? "seen" : "unseen"}</div>
+                            }
                         </div>
                     </div>
                 ))}
-                {typing}
+                {isTyping}
             </div>
 
             {/* Input Box */}
