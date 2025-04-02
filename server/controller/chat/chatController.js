@@ -7,8 +7,8 @@ const chatModel = require("../../model/chat/chatModel");
 exports.chatUsers = async (req, res) => {
   try {
     const myId = req.user.id;
-    const users = await chatModel.find({users:{$in:[myId]}}).populate({path: "users", select: "username"});
-
+    const users = await chatModel.find({users:{$in:[myId]}}).populate({path: "users", select: "username"}).populate({path: "latestMessage", select: "text isRead"});
+  
     if (users.length === 0) {
       return res.status(404).json({
         status: false,
@@ -90,7 +90,7 @@ exports.sendMessage = async(req,res) => {
 
     if(!chat){
         chat = new chatModel({
-          users:[senderId,receiverId]
+          users:[senderId,receiverId],
         })
         await chat.save();
     }
@@ -107,11 +107,14 @@ exports.sendMessage = async(req,res) => {
 
     await newMessage.save();
 
+    
+    const latestMessage = await chatModel.findByIdAndUpdate(chatId,{$set: {latestMessage: newMessage._id}});
+
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", newMessage);
     }
-    return res.status(201).json({ status: true, message: "Message sent successfully", data: newMessage });
+    return res.status(201).json({ status: true, message: "Message sent successfully", data: newMessage});
   } catch (error) {
     console.error("Error in sendMessage controller:", error);
     return res.status(500).json({ status: false, code: 500, message:"Internal Server Error" });
