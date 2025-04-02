@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {Link, useNavigate} from "react-router-dom";
 import {Eye, EyeOff} from "lucide-react";
 import { toast } from "react-toastify";
@@ -21,7 +21,7 @@ const Login = () => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const navigate = useNavigate();
     const { setUser } = useUser();
-    const token = sessionStorage.getItem("token");
+  
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setFormData({
         ...formData,
@@ -75,12 +75,6 @@ const Login = () => {
         setLoading(false);
       }
     }
-
-    useEffect(()=>{
-      if(token) {
-        navigate("/dashboard");
-      }
-    },[token]);
 
     return (
       <>
