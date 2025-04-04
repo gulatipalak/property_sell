@@ -276,7 +276,7 @@ const AddProperty = () => {
                 onChange={handleChange}
                 className="w-full mt-1 p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
               >
-                <option value="Sell">Sell</option>
+                <option value="Sell">Sale</option>
                 <option value="Rent">Rent</option>
               </select>
             </div>
