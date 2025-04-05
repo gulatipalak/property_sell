@@ -22,21 +22,21 @@ interface Property {
     amenities: string[];
     contact: string;
     location: string;
-    price: string;
+    price: number;
     approvalStatus: string;
     image: string;
     userId: string;
 }
 
-interface FormData {
+interface FiltersData {
     location: string;
-    propertyType: string;
+    type: string;
     bedrooms: string;
     bathrooms: string;
-    area: string;
+    // area: number;
     postingFor: string;
     furnished: string[];
-    rangeValue: number;
+    // price: number;
   }
 
 const PropertiesList = () => {
@@ -46,19 +46,18 @@ const PropertiesList = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isFilterOffcanvas, setIsFilterOffCanvas] = useState(false);
 
-    const fetchProperties = async(filterData?: FormData) => {
-        console.log("filter Properties",filterData);
+    const fetchProperties = async(filterData?: FiltersData) => {
+        // console.log("filter Properties",filterData);
         const queryParams = new URLSearchParams();
 
-        // ✅ Convert FormData to a valid object
+        // ✅ Convert FiltersData to a valid object
         if (filterData) {
             for (const [key, value] of Object.entries(filterData)) {
-                // if (value !== "" && value !== undefined) {
-                    queryParams.append(key, value.toString());
-                //}
+                queryParams.append(key, value.toString());
             }
         }
-        console.log(queryParams.toString(),"queryParams"); 
+        // console.log(queryParams.toString(),"queryParams");
+        localStorage.setItem("property_filters",JSON.stringify(filterData)) 
 
         try {
             const token = sessionStorage.getItem("token");
@@ -74,8 +73,8 @@ const PropertiesList = () => {
             const fetchedProperties = response.data.data.properties || [];
             setIsLoading(false);
             setProperties(fetchedProperties);
-            
-            console.log(response.data.data.properties);
+            setNoProperties(false);
+            // console.log(response.data.data.properties);
         }
         catch (error:unknown) {
             if(axios.isAxiosError(error)){
@@ -93,6 +92,9 @@ const PropertiesList = () => {
 
     useEffect( () => {  
         fetchProperties();
+        return (()=> {
+            localStorage.removeItem("property_filters");
+        })
     },[]); 
 
     const handleDelete = async (propertyId: string) => {
@@ -133,8 +135,8 @@ const PropertiesList = () => {
         }
     }
 
-    const handleFilterData = ((filterData: FormData) => {
-            console.log("Filters Data", filterData);
+    const handleFilterData = ((filterData: FiltersData) => {
+            // console.log("Filters Data", filterData);
             fetchProperties(filterData);
         }
     )

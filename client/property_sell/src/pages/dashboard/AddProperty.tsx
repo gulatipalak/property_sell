@@ -91,7 +91,7 @@ const AddProperty = () => {
       image,
     } = formData;
 
-    if (!property_name || !postingFor || !area || !price || !contact) {
+    if (!property_name || !postingFor || !area || !price || !contact || !location || !image) {
       toast.error("Please Fill All Required Fields.");
       setIsLoading(false);
       return;
@@ -276,7 +276,7 @@ const AddProperty = () => {
                 onChange={handleChange}
                 className="w-full mt-1 p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
               >
-                <option value="Sell">Sale</option>
+                <option value="Sell">Sell</option>
                 <option value="Rent">Rent</option>
               </select>
             </div>
@@ -374,7 +374,7 @@ const AddProperty = () => {
 
             <div>
               <label className="block text-gray-700 font-medium">
-                Location
+                Location  <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -391,7 +391,7 @@ const AddProperty = () => {
                 Price <span className="text-red-500">*</span>
               </label>
               <input
-                type="text"
+                type="number"
                 name="price"
                 value={formData.price}
                 onChange={handleChange}
@@ -449,7 +449,7 @@ const AddProperty = () => {
                 htmlFor="uploadImage"
                 className="w-full h-40 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 transition"
               >
-                <span className="text-gray-500">Click to Upload</span>
+                <span className="text-gray-500">Click to Upload<span className="text-red-500">*</span></span>
                 <input
                   type="file"
                   id="uploadImage"

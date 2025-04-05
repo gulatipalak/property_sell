@@ -1,78 +1,111 @@
 import { X } from "lucide-react";
 import Button from "./Button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { APP_URL } from "../app_url";
+import { useUser } from "../context/UserContext";
 
 interface PropertyFiltersProps {
     setIsFilterOffCanvas: React.Dispatch<React.SetStateAction<boolean>>;
-    handleFilter: (filters: FormData) => void;
+    handleFilter: (filters: FiltersData) => void;
 }
 
 
 // ✅ Interface for Form Data State
-interface FormData {
+interface FiltersData {
     location: string;
-    propertyType: string;
+    type: string;
     bedrooms: string;
     bathrooms: string;
-    area: string;
+    // area: number;
     postingFor: string;
     furnished: string[];
-    rangeValue: number;
+    // price: number;
   }
 
 const PropertyFilters = ( {setIsFilterOffCanvas, handleFilter}: PropertyFiltersProps ) => {
-    const [formData, setFormData] = useState<FormData>({
+    const {token} = useUser();
+    const [filterData, setFilterData] = useState<FiltersData>({
         location: '',
-        propertyType: '',
+        type: '',
         bedrooms: '',
         bathrooms: '',
-        area: '',
+        // area: 0,
         postingFor: '',
         furnished: [],
-        rangeValue: 50000
+        // price: 50000
     });
+    const [locations,setLocations] = useState([]);
 
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement|HTMLInputElement>) => {
         const {name,value,type} = e.target;
 
         if (name === "furnished" && type == "checkbox") {
             const updatedFurnished = e.target.checked ?
-                [...formData.furnished, value] :
-                formData.furnished.filter((item) => item !== value);
+                [...filterData.furnished, value] :
+                filterData.furnished.filter((item) => item !== value);
             
-                setFormData({
-                    ...formData,
+                setFilterData({
+                    ...filterData,
                     furnished: updatedFurnished
                 })
 
         }else {
-        setFormData({
-            ...formData,
+        setFilterData({
+            ...filterData,
             [name]: value
         })}
     }
     const handleReset = () => {
-        console.log("reset");
-        setFormData({
+        const resetFilters = {
             location: '',
-            propertyType: '',
+            type: '',
             bedrooms: '',
             bathrooms: '',
-            area: '',
+            // area: 0,
             postingFor: '',
             furnished: [],
-            rangeValue: 50000
-        })
+            // price: 0
+        };
+    
+        setFilterData(resetFilters);         // Update state
+        handleFilter(resetFilters);          // Call filter function with updated values
     }
 
     const handleClose = () => {
-        handleReset();
         setIsFilterOffCanvas(false);
     }
-    console.log(formData);
+
+    useEffect(() => {
+        const fetchLocations = async() => {
+            try{
+                const response = await axios.get(`${APP_URL}/api/v1/user/landlord/get-locations`,{
+                    headers: {Authorization: `Bearer ${token}`}
+                })
+                // console.log(response.data.data);
+                setLocations(response.data.data);
+            }catch(error) {
+                console.log(error);
+            }
+        }
+        fetchLocations();
+        const getStoredFilters = localStorage.getItem("property_filters");
+        let restoreFilters;
+
+          // Ensure it's not undefined or the literal string "undefined"
+          if (getStoredFilters && getStoredFilters !== "undefined") {
+            restoreFilters = JSON.parse(getStoredFilters);
+          } else {
+            restoreFilters = filterData; // fallback
+          }
+        
+        setFilterData(restoreFilters);
+    },[])
+
+    // console.log(filterData);
     return (
-        <div className="fixed inset-0 bg-[#0000007d] bg-opacity-50 flex justify-end z-50">
-            <div className="w-100 bg-white pb-4 px-4 shadow-lg h-full overflow-y-auto">
+        <div className="fixed inset-0 bg-[#0000007d] bg-opacity-50 flex justify-end z-50" onClick = {handleClose}>
+            <div className="w-100 bg-white pb-4 px-4 shadow-lg h-full overflow-y-auto"  onClick={(e) => e.stopPropagation()}>
                 <div className="sticky bg-white top-0 flex justify-between mb-4 py-4">
                     <h2 className="text-lg font-bold">Filter Properties</h2>
                     <button className="cursor-pointer" onClick = {handleClose} ><X size={20} /></button>
@@ -81,18 +114,18 @@ const PropertyFilters = ( {setIsFilterOffCanvas, handleFilter}: PropertyFiltersP
                 {/* Location Dropdown */}
                 <div className="mb-4">
                     <label htmlFor="location" className="block text-gray-700">Location</label>
-                    <select id="location" name="location" value={formData.location} onChange={handleChange} className="w-full p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800" >
+                    <select id="location" name="location" value={filterData.location} onChange={handleChange} className="w-full p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800" >
                         <option value="">All Locations</option>
-                        <option value="Delhi">Delhi</option>
-                        <option value="Mumbai">Mumbai</option>
-                        <option value="Bangalore">Bangalore</option>
+                        {locations.map((location,index) => 
+                            (<option key={index} value={location}>{location}</option>)
+                        )}
                     </select>
                 </div>
 
                 {/* Property Type Dropdown */}
                 <div className="mb-4">
-                    <label htmlFor="propertyType" className="block text-gray-700">Property Type</label>
-                    <select id="propertyType" name="propertyType" value={formData.propertyType} onChange={handleChange} className="w-full p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800">
+                    <label htmlFor="type" className="block text-gray-700">Property Type</label>
+                    <select id="type" name="type" value={filterData.type} onChange={handleChange} className="w-full p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800">
                         <option value="">All Types</option>
                         <option value="Apartment">Apartment</option>
                         <option value="House">House</option>
@@ -106,10 +139,10 @@ const PropertyFilters = ( {setIsFilterOffCanvas, handleFilter}: PropertyFiltersP
                     <label htmlFor="postingFor" className="block text-gray-700">Posting For</label>
                     <div className="flex gap-3">
                         <label className="flex items-center gap-2">
-                            <input type="radio" name="postingFor" value="rent" checked={formData.postingFor === "rent"} onChange={handleChange} /> Rent
+                            <input type="radio" name="postingFor" value="rent" checked={filterData.postingFor === "rent"} onChange={handleChange} /> Rent
                         </label>
                         <label className="flex items-center gap-2">
-                            <input type="radio" name="postingFor" value="sale" checked={formData.postingFor === "sale"} onChange={handleChange} /> Sale
+                            <input type="radio" name="postingFor" value="sell" checked={filterData.postingFor === "sell"} onChange={handleChange} /> Sell
                         </label>
                     </div>
                 </div>
@@ -118,17 +151,16 @@ const PropertyFilters = ( {setIsFilterOffCanvas, handleFilter}: PropertyFiltersP
                 <div className="mb-4">
                     <label className="block text-gray-700 mb-1">Furnishing</label>
                     <div className="flex flex-col gap-2">
-                        <label><input type="checkbox" name="furnished" value="Fully Furnished" checked={formData.furnished.includes("Fully Furnished")} onChange={handleChange}/>Fully Furnished</label>
-                        <label><input type="checkbox" name="furnished" value="Semi Furnished" checked={formData.furnished.includes("Semi Furnished")} onChange={handleChange}/>Semi Furnished</label>
-                        <label><input type="checkbox" name="furnished" value="unfurnished" checked={formData.furnished.includes("Unfurnished")} onChange={handleChange}/>Unfurnished</label>
-                </div>
-                    
+                        <label className="flex gap-2"><input type="checkbox" name="furnished" value="Fully Furnished" checked={filterData.furnished.includes("Fully Furnished")} onChange={handleChange}/>Fully Furnished</label>
+                        <label className="flex gap-2"><input type="checkbox" name="furnished" value="Semi Furnished" checked={filterData.furnished.includes("Semi Furnished")} onChange={handleChange}/>Semi Furnished</label>
+                        <label className="flex gap-2"><input type="checkbox" name="furnished" value="Unfurnished" checked={filterData.furnished.includes("Unfurnished")} onChange={handleChange}/>Unfurnished</label>
+                    </div>
                 </div>
 
                 {/* Bedrooms Dropdown */}
                 <div className="mb-4">
                     <label htmlFor="bedrooms" className="block text-gray-700">Bedrooms</label>
-                    <select id="bedrooms" name="bedrooms" value={formData.bedrooms} onChange={handleChange} className="w-full p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800">
+                    <select id="bedrooms" name="bedrooms" value={filterData.bedrooms} onChange={handleChange} className="w-full p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800">
                         <option value="">Any</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
@@ -140,7 +172,7 @@ const PropertyFilters = ( {setIsFilterOffCanvas, handleFilter}: PropertyFiltersP
                 {/* Bathrooms Dropdown */}
                 <div className="mb-4">
                     <label htmlFor="bathrooms" className="block text-gray-700">Bathrooms</label>
-                    <select id="bathrooms" name="bathrooms" value={formData.bathrooms} onChange={handleChange} className="w-full p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800">
+                    <select id="bathrooms" name="bathrooms" value={filterData.bathrooms} onChange={handleChange} className="w-full p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800">
                         <option value="">Any</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
@@ -150,21 +182,21 @@ const PropertyFilters = ( {setIsFilterOffCanvas, handleFilter}: PropertyFiltersP
                 </div>
 
                 {/* Area Input */}
-                <div className="mb-4">
+                {/* <div className="mb-4">
                     <label htmlFor="area" className="block text-gray-700">Area (sq ft)</label>
-                    <input id="area" name="area" type="number" value={formData.area} onChange={handleChange} className="w-full p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800" placeholder="Enter area" />
-                </div>
+                    <input id="area" name="area" type="number" value={filterData.area} onChange={handleChange} className="w-full p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800" placeholder="Enter area" />
+                </div> */}
 
                 {/* Price Range (Static UI) */}
-                <div className="mb-4">
+                {/* <div className="mb-4">
                     <label className="block text-gray-700">Price Range</label>
-                    <input type="range" min="1000" max="100000" name="rangeValue" step="1000" value={formData.rangeValue} onChange={handleChange} className="w-full" />
-                    <p className="text-gray-700">Range: ₹{formData.rangeValue}</p>
-                </div>
+                    <input type="range" min="1000" max="100000" name="price" step="1000" value={filterData.price} onChange={handleChange} className="w-full" />
+                    <p className="text-gray-700">Range: ₹{filterData.price}</p>
+                </div> */}
 
                 {/* Apply Filters Button */}
                 <div className="flex gap-3">
-                    <Button onClick={() => handleFilter(formData)}>Apply Filters</Button>
+                    <Button onClick={() => {handleFilter(filterData); handleClose()}}>Apply Filters</Button>
                     <Button onClick={handleReset}>Reset</Button>
                 </div>
             </div>
