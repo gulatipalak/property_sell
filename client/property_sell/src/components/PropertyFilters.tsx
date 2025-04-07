@@ -17,10 +17,10 @@ interface FiltersData {
     type: string;
     bedrooms: string;
     bathrooms: string;
-    // area: number;
+    area: number | "";
     postingFor: string;
     furnished: string[];
-    // price: number;
+    // price: number | "";
   }
 
 const PropertyFilters = ( {setIsFilterOffCanvas, handleFilter}: PropertyFiltersProps ) => {
@@ -30,9 +30,9 @@ const PropertyFilters = ( {setIsFilterOffCanvas, handleFilter}: PropertyFiltersP
         type: '',
         bedrooms: '',
         bathrooms: '',
-        // area: 0,
+        area: "" as number | "",
         postingFor: '',
-        furnished: [],
+        furnished: []
         // price: 50000
     });
     const [locations,setLocations] = useState([]);
@@ -62,10 +62,10 @@ const PropertyFilters = ( {setIsFilterOffCanvas, handleFilter}: PropertyFiltersP
             type: '',
             bedrooms: '',
             bathrooms: '',
-            // area: 0,
+            area: "" as number | "",
             postingFor: '',
             furnished: [],
-            // price: 0
+            price: "" as number | ""
         };
     
         setFilterData(resetFilters);         // Update state
@@ -182,10 +182,10 @@ const PropertyFilters = ( {setIsFilterOffCanvas, handleFilter}: PropertyFiltersP
                 </div>
 
                 {/* Area Input */}
-                {/* <div className="mb-4">
+                <div className="mb-4">
                     <label htmlFor="area" className="block text-gray-700">Area (sq ft)</label>
-                    <input id="area" name="area" type="number" value={filterData.area} onChange={handleChange} className="w-full p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800" placeholder="Enter area" />
-                </div> */}
+                    <input id="area" name="area" type="number" value={filterData.area} onChange={handleChange} onWheel={(e) => e.currentTarget.blur()} className="w-full p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" placeholder="Enter area" />
+                </div>
 
                 {/* Price Range (Static UI) */}
                 {/* <div className="mb-4">

@@ -42,7 +42,7 @@ exports.getMyProperties = async (req,res) =>{
     try {
         const user = req.user;
         const searchQuery = req.query;
-        // console.log("searchQuery",searchQuery);
+        console.log("searchQuery",searchQuery);
 
         let filter = {};
 
@@ -79,7 +79,10 @@ exports.getMyProperties = async (req,res) =>{
         if(req.query.price && !isNaN(req.query.price)) {
             filter.price = { $lte: Number(req.query.price)};
         }
-        // console.log("filters:",filter);
+        if(req.query.area) {
+            filter.area = {$lte: Number(req.query.area)};
+        }
+        console.log("filters:",filter);
 
 
         let properties = [];

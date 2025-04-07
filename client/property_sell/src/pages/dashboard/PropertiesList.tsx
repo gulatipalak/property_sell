@@ -33,10 +33,10 @@ interface FiltersData {
     type: string;
     bedrooms: string;
     bathrooms: string;
-    // area: number;
+    area: number | "";
     postingFor: string;
     furnished: string[];
-    // price: number;
+    // price: number | "";
   }
 
 const PropertiesList = () => {
