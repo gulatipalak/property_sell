@@ -41,7 +41,7 @@ exports.addProperty = async (req,res) => {
 exports.getMyProperties = async (req,res) =>{
     try {
         const user = req.user;
-        const searchQuery = req.query
+        const searchQuery = req.query;
         // console.log("searchQuery",searchQuery);
 
         let filter = {};

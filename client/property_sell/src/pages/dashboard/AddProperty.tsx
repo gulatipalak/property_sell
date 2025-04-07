@@ -23,14 +23,14 @@ const AddProperty = () => {
     property_name: "",
     postingFor: "Sell",
     type: "Apartment",
-    area: "",
+    area: "" as number | "",
     bedrooms: "",
     bathrooms: "",
     furnished: "Fully Furnished",
     amenities: "",
     contact: "",
     location: "",
-    price: "",
+    price: "" as number | "",
     image: null as string | File | null,
   });
 
@@ -91,12 +91,12 @@ const AddProperty = () => {
       image,
     } = formData;
 
-    if (!property_name || !postingFor || !area || !price || !contact || !location || !image) {
+    if (!property_name || !postingFor || !area || !price || !contact) {
       toast.error("Please Fill All Required Fields.");
       setIsLoading(false);
       return;
     }
-
+    console.log("form data:", formData)
     // Create a FormData object
     const formDataToSend = new FormData();
     if (propertyid) {
@@ -105,14 +105,14 @@ const AddProperty = () => {
     formDataToSend.append("property_name", property_name);
     formDataToSend.append("postingFor", postingFor);
     formDataToSend.append("type", type);
-    formDataToSend.append("area", area);
+    formDataToSend.append("area", area.toString());
     formDataToSend.append("bedrooms", bedrooms);
     formDataToSend.append("bathrooms", bathrooms);
     formDataToSend.append("furnished", furnished);
     formDataToSend.append("amenities", amenities);
     formDataToSend.append("contact", contact);
     formDataToSend.append("location", location);
-    formDataToSend.append("price", price);
+    formDataToSend.append("price", price.toString());
 
     if (image) {
       formDataToSend.append("image", image);
@@ -126,10 +126,10 @@ const AddProperty = () => {
           return;
         }
 
-        // console.log("Checking FormData:");
-        // for (const pair of formDataToSend.entries()) {
-        //     console.log(`${pair[0]}:`, pair[1]); // Logs key-value pairs
-        // }
+        console.log("Checking FormDataToSend:");
+        for (const pair of formDataToSend.entries()) {
+            console.log(`${pair[0]}:`, pair[1]); // Logs key-value pairs
+        }
 
         const response = await axios.patch(
           `${APP_URL}/api/v1/user/landlord/update-property`,
@@ -276,7 +276,7 @@ const AddProperty = () => {
                 onChange={handleChange}
                 className="w-full mt-1 p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
               >
-                <option value="Sell">Sell</option>
+                <option value="Sell">Sale</option>
                 <option value="Rent">Rent</option>
               </select>
             </div>
@@ -374,7 +374,7 @@ const AddProperty = () => {
 
             <div>
               <label className="block text-gray-700 font-medium">
-                Location  <span className="text-red-500">*</span>
+                Location
               </label>
               <input
                 type="text"
@@ -449,7 +449,7 @@ const AddProperty = () => {
                 htmlFor="uploadImage"
                 className="w-full h-40 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 transition"
               >
-                <span className="text-gray-500">Click to Upload<span className="text-red-500">*</span></span>
+                <span className="text-gray-500">Click to Upload</span>
                 <input
                   type="file"
                   id="uploadImage"
