@@ -23,14 +23,14 @@ const AddProperty = () => {
     property_name: "",
     postingFor: "Sell",
     type: "Apartment",
-    area: "",
+    area: "" as number | "",
     bedrooms: "",
     bathrooms: "",
     furnished: "Fully Furnished",
     amenities: "",
     contact: "",
     location: "",
-    price: "",
+    price: "" as number | "",
     image: null as string | File | null,
   });
 
@@ -91,12 +91,12 @@ const AddProperty = () => {
       image,
     } = formData;
 
-    if (!property_name || !postingFor || !area || !price || !contact) {
+    if (!property_name || !postingFor || !area || !price || !contact || !location || !image) {
       toast.error("Please Fill All Required Fields.");
       setIsLoading(false);
       return;
     }
-
+    console.log("form data:", formData)
     // Create a FormData object
     const formDataToSend = new FormData();
     if (propertyid) {
@@ -105,14 +105,14 @@ const AddProperty = () => {
     formDataToSend.append("property_name", property_name);
     formDataToSend.append("postingFor", postingFor);
     formDataToSend.append("type", type);
-    formDataToSend.append("area", area);
+    formDataToSend.append("area", area.toString());
     formDataToSend.append("bedrooms", bedrooms);
     formDataToSend.append("bathrooms", bathrooms);
     formDataToSend.append("furnished", furnished);
     formDataToSend.append("amenities", amenities);
     formDataToSend.append("contact", contact);
     formDataToSend.append("location", location);
-    formDataToSend.append("price", price);
+    formDataToSend.append("price", price.toString());
 
     if (image) {
       formDataToSend.append("image", image);
@@ -120,16 +120,16 @@ const AddProperty = () => {
 
     if (isEdit) {
       try {
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token");
         if (!token) {
           toast.error("Authentication error! Please log in.");
           return;
         }
 
-        // console.log("Checking FormData:");
-        // for (const pair of formDataToSend.entries()) {
-        //     console.log(`${pair[0]}:`, pair[1]); // Logs key-value pairs
-        // }
+        console.log("Checking FormDataToSend:");
+        for (const pair of formDataToSend.entries()) {
+            console.log(`${pair[0]}:`, pair[1]); // Logs key-value pairs
+        }
 
         const response = await axios.patch(
           `${APP_URL}/api/v1/user/landlord/update-property`,
@@ -163,7 +163,7 @@ const AddProperty = () => {
       }
     } else {
       try {
-        const token = localStorage.getItem("token");
+        const token = sessionStorage.getItem("token");
         if (!token) {
           toast.error("Authentication error! Please log in.");
           return;
@@ -200,7 +200,7 @@ const AddProperty = () => {
 
   useEffect(() => {
     const fetchProperty = async () => {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       if (!token) {
         toast.error("Authentication error! Please log in.");
@@ -276,7 +276,7 @@ const AddProperty = () => {
                 onChange={handleChange}
                 className="w-full mt-1 p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
               >
-                <option value="Sell">Sell</option>
+                <option value="Sell">Sale</option>
                 <option value="Rent">Rent</option>
               </select>
             </div>
@@ -308,7 +308,8 @@ const AddProperty = () => {
                 name="area"
                 value={formData.area}
                 onChange={handleChange}
-                className="w-full mt-1 p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
+                onWheel={(e) => e.currentTarget.blur()}
+                className="w-full mt-1 p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 placeholder="Enter Area"
               />
             </div>
@@ -322,7 +323,8 @@ const AddProperty = () => {
                 name="bedrooms"
                 value={formData.bedrooms}
                 onChange={handleChange}
-                className="w-full mt-1 p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
+                onWheel={(e) => e.currentTarget.blur()}
+                className="w-full mt-1 p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 placeholder="Enter Number of Bedrooms"
               />
             </div>
@@ -336,7 +338,8 @@ const AddProperty = () => {
                 name="bathrooms"
                 value={formData.bathrooms}
                 onChange={handleChange}
-                className="w-full mt-1 p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
+                onWheel={(e) => e.currentTarget.blur()}
+                className="w-full mt-1 p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 placeholder="Enter Number of Bathrooms"
               />
             </div>
@@ -374,7 +377,7 @@ const AddProperty = () => {
 
             <div>
               <label className="block text-gray-700 font-medium">
-                Location
+                Location <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -390,16 +393,22 @@ const AddProperty = () => {
               <label className="block text-gray-700 font-medium">
                 Price <span className="text-red-500">*</span>
               </label>
+              <div className="relative">
               <input
-                type="text"
+                type="number"
                 name="price"
                 value={formData.price}
                 onChange={handleChange}
-                className="w-full mt-1 p-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
+                onWheel={(e) => e.currentTarget.blur()}
+                className="w-full mt-1 py-2 pl-5 pr-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-800 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 placeholder="Enter price"
               />
+              <div className="absolute top-[13px] left-[8px]">
+              ₹
+              </div>
+              </div>
             </div>
-
+            
             <div>
               <label className="block text-gray-700 font-medium">
                 Contact <span className="text-red-500">*</span>
@@ -449,7 +458,7 @@ const AddProperty = () => {
                 htmlFor="uploadImage"
                 className="w-full h-40 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 transition"
               >
-                <span className="text-gray-500">Click to Upload</span>
+                <span className="text-gray-500">Click to Upload <span className="text-red-500">*</span></span>
                 <input
                   type="file"
                   id="uploadImage"

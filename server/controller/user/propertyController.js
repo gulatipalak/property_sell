@@ -41,6 +41,49 @@ exports.addProperty = async (req,res) => {
 exports.getMyProperties = async (req,res) =>{
     try {
         const user = req.user;
+        const searchQuery = req.query;
+        console.log("searchQuery",searchQuery);
+
+        let filter = {};
+
+        if (req.query.location){
+            filter.location = req.query.location;
+        }
+        if (req.query.type) {
+            filter.type = req.query.type;
+        }
+        if (req.query.bedrooms) {
+            if(Number(req.query.bedrooms) > 4){
+                filter.bedrooms = {$gte: Number(req.query.bedrooms)}
+                
+            }
+            else {filter.bedrooms = Number(req.query.bedrooms)}
+        }
+        if (req.query.bathrooms) {
+            if(Number(req.query.bathrooms) > 4){
+                filter.bathrooms = {$gte: Number(req.query.bathrooms)};
+            }
+            else {
+                filter.bathrooms = Number(req.query.bathrooms);
+            }
+        }
+        if (req.query.area) {
+            filter.area = Number(req.query.area);
+        }
+        if (req.query.postingFor) {
+            filter.postingFor = {$regex: req.query.postingFor,$options: "i"};
+        }
+        if(req.query.furnished) {
+            filter.furnished = {$in: req.query.furnished.split(",")};
+        }
+        if(req.query.price && !isNaN(req.query.price)) {
+            filter.price = { $lte: Number(req.query.price)};
+        }
+        if(req.query.area) {
+            filter.area = {$lte: Number(req.query.area)};
+        }
+        console.log("filters:",filter);
+
 
         let properties = [];
         if(user.role === "landlord") {
@@ -54,7 +97,7 @@ exports.getMyProperties = async (req,res) =>{
             }).sort("-createdAt")
 
         } else if (user.role === "tenant") {
-            properties = await propertyModel.find();
+            properties = await propertyModel.find(filter);
         }
       
 
@@ -78,7 +121,7 @@ exports.getMyProperties = async (req,res) =>{
 exports.deleteProperty = async (req,res) => {
     try {
         const property_id = req.params.id;
-        console.log(property_id);
+        // console.log(property_id);
 
         if (!property_id) {
             return res.status(400).json({ status: false, code: 400, message: "Property ID is required!" });
@@ -130,6 +173,18 @@ exports.updateProperty = async (req,res) => {
         
         const property = await propertyModel.findByIdAndUpdate(property_id, {formData,image:imageUrl},{new: true});
         return res.status(200).json({status: true, code: 200, message:"Property Updated Successfully!", data:{property: property}});
+
+    } catch(error) {
+        return res.status(500).json({status: false, code: 500, message: "Internal Server Error", error});
+    }
+}
+
+exports.getLocations = async (req,res) => {
+    try {
+        // console.log("locations api working");
+        const Locations = (await propertyModel.distinct("location")).sort();
+        // console.log("locations",Locations);
+        return res.status(200).json({status: true, code: 200, message:"All locations", data:Locations});
 
     } catch(error) {
         return res.status(500).json({status: false, code: 500, message: "Internal Server Error", error});

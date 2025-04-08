@@ -21,6 +21,7 @@ const Login = () => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const navigate = useNavigate();
     const { setUser } = useUser();
+  
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setFormData({
         ...formData,
@@ -53,12 +54,11 @@ const Login = () => {
 
       try {
         const response = await axios.post(`${APP_URL}/api/v1/user/login`,formData);
-        localStorage.setItem("token",response.data.token);
-        setUser(response.data.user); 
+        sessionStorage.setItem("token",response.data.token);
+        setUser(response.data.data);
         requestNotificationPermission();
         navigate("/dashboard");
         setLoading(false);
-
       } catch (error: unknown) {
         if (axios.isAxiosError(error)){
           if(error.response?.data.code == 400) {

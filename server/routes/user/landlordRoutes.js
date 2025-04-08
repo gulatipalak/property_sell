@@ -9,6 +9,7 @@ router.route("/get-properties").get(verifyToken,propertyController.getMyProperti
 router.route("/get-property/:id").get(verifyToken,propertyController.getProperty);
 router.route("/update-property").patch(verifyToken,upload.single("image"),propertyController.updateProperty);
 router.route("/delete-property/:id").delete(verifyToken,propertyController.deleteProperty);
+router.route("/get-locations").get(verifyToken,propertyController.getLocations);
 
 
 module.exports = router;
