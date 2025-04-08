@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { APP_URL } from "../app_url";
+import { APP_URL } from "../global_variables";
 import { useUser } from "../context/UserContext";
 
 interface User {
