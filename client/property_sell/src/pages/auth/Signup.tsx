@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import {toast} from "react-toastify";
 import { useLocation } from "react-router-dom";
 import { ClipLoader } from "react-spinners";
-import { APP_URL } from "../../app_url";
+import { APP_URL } from "../../global_variables";
 import AuthLayout from "../../layouts/AuthLayout";
 import ReactPasswordChecklist from "react-password-checklist";
 import Button from "../../components/Button";

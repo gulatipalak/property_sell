@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import PanelLayout from "../../layouts/PanelLayout";
 import { ClipLoader } from "react-spinners";
 import { toast, ToastContainer } from "react-toastify";
-import { APP_URL } from "../../app_url";
+import { APP_URL } from "../../global_variables";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";

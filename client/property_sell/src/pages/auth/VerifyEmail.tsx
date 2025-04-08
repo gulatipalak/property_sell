@@ -4,7 +4,7 @@ import OTPInput from "react-otp-input";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import axios from "axios";
-import { APP_URL } from "../../app_url";
+import { APP_URL } from "../../global_variables";
 import AuthLayout from "../../layouts/AuthLayout";
 import Button from "../../components/Button";
 import { useUser } from "../../context/UserContext";

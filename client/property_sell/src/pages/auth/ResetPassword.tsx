@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import AuthLayout from "../../layouts/AuthLayout";
 import axios from "axios";
-import { APP_URL } from "../../app_url";
+import { APP_URL } from "../../global_variables";
 import Button from "../../components/Button";
 
 

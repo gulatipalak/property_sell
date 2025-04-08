@@ -32,6 +32,7 @@ exports.userSignup = async (req, res) => {
       role,
       phone_number,
       licence_number,
+      profile_photo,
       otp
     });
 
@@ -282,7 +283,9 @@ exports.updateProfile = async (req,res) => {
       const {id} = req.user;
       const formData = req.body;
 
-      const updateUser = await userModel.findByIdAndUpdate(id,formData,{new: true});
+      const image_url = req.file ? req.file.path : "";
+      console.log("image_url",image_url);
+      const updateUser = await userModel.findByIdAndUpdate(id,{formData,profile_photo: image_url},{new: true});
 
       return res.status(200).json({
         status: true,

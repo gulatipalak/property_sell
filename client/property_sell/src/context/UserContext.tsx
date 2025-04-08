@@ -1,7 +1,11 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import axios from "axios";
+<<<<<<< HEAD
+import { APP_URL } from "../global_variables";
+=======
 import { APP_URL } from "../app_url";
 import { io, Socket } from "socket.io-client";
+>>>>>>> 07442cb6c93370ebb1a11430a48dbbded96986b4
 
 // Define User Type
 interface User {
@@ -9,6 +13,7 @@ interface User {
     username: string;
     role: string;
     email: string;
+    profile_photo: string | File | null;
 }
 
 // Define Context Type
