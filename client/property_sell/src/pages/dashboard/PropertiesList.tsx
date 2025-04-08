@@ -8,6 +8,8 @@ import { confirmDialog } from "../../components/common/confirm";
 import { ClipLoader } from "react-spinners";
 import Button from "../../components/Button";
 import { useUser } from "../../context/UserContext";
+import PropertyFilters from "../../components/PropertyFilters";
+
 interface Property {
     _id: string;
     property_name: string;
@@ -20,51 +22,79 @@ interface Property {
     amenities: string[];
     contact: string;
     location: string;
-    price: string;
+    price: number;
     approvalStatus: string;
     image: string;
     userId: string;
 }
+
+interface FiltersData {
+    location: string;
+    type: string;
+    bedrooms: string;
+    bathrooms: string;
+    area: number | "";
+    postingFor: string;
+    furnished: string[];
+    // price: number | "";
+  }
 
 const PropertiesList = () => {
     const  navigate = useNavigate();
     const [properties, setProperties] = useState<Property[]>([]);
     const [noProperties, setNoProperties] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [isFilterOffcanvas, setIsFilterOffCanvas] = useState(false);
 
-    useEffect( () => {
-        const fetchProperties = async() => {
-            try {
-                const token = sessionStorage.getItem("token");
-                if (!token) {
-                    toast.error("Authentication error! Please log in.");
-                    navigate("/login");
-                    return;
-                }
+    const fetchProperties = async(filterData?: FiltersData) => {
+        // console.log("filter Properties",filterData);
+        const queryParams = new URLSearchParams();
 
-                const response = await axios.get(`${APP_URL}/api/v1/user/landlord/get-properties`,{
-                    headers:{Authorization: `Bearer ${token}`}
-                })
-                const fetchedProperties = response.data.data.properties || [];
-                setIsLoading(false);
-                setProperties(fetchedProperties);
-                
-                console.log(response.data.data.properties);
+        // ✅ Convert FiltersData to a valid object
+        if (filterData) {
+            for (const [key, value] of Object.entries(filterData)) {
+                queryParams.append(key, value.toString());
             }
-            catch (error:unknown) {
-                if(axios.isAxiosError(error)){
-                    if (error.response?.status === 404) {
-                        console.log(error.response.data.message || "No properties Found");
-                        setIsLoading(false);
-                        setNoProperties(true);
-                    }
-                }
-                else{
-                    console.log(error || "Something went wrong. Please try again later.");
+        }
+        // console.log(queryParams.toString(),"queryParams");
+        localStorage.setItem("property_filters",JSON.stringify(filterData)) 
+
+        try {
+            const token = sessionStorage.getItem("token");
+            if (!token) {
+                toast.error("Authentication error! Please log in.");
+                navigate("/login");
+                return;
+            }
+
+            const response = await axios.get(`${APP_URL}/api/v1/user/landlord/get-properties?${queryParams}`,{
+                headers:{Authorization: `Bearer ${token}`}
+            })
+            const fetchedProperties = response.data.data.properties || [];
+            setIsLoading(false);
+            setProperties(fetchedProperties);
+            setNoProperties(false);
+            // console.log(response.data.data.properties);
+        }
+        catch (error:unknown) {
+            if(axios.isAxiosError(error)){
+                if (error.response?.status === 404) {
+                    console.log(error.response.data.message || "No properties Found");
+                    setIsLoading(false);
+                    setNoProperties(true);
                 }
             }
-        }   
+            else{
+                console.log(error || "Something went wrong. Please try again later.");
+            }
+        }
+    } 
+
+    useEffect( () => {  
         fetchProperties();
+        return (()=> {
+            localStorage.removeItem("property_filters");
+        })
     },[]); 
 
     const handleDelete = async (propertyId: string) => {
@@ -105,6 +135,12 @@ const PropertiesList = () => {
         }
     }
 
+    const handleFilterData = ((filterData: FiltersData) => {
+            // console.log("Filters Data", filterData);
+            fetchProperties(filterData);
+        }
+    )
+
     const {user} = useUser();
     return(
         <>
@@ -114,7 +150,7 @@ const PropertiesList = () => {
                         All Properties
                     </h2>
                     {user?.role === "landlord" ? 
-                    (<Button to="/properties/property/add">Add Property</Button>): ""}
+                    (<Button to="/properties/property/add">Add Property</Button>):(<Button className="w-auto!" onClick={()=>setIsFilterOffCanvas(true)}>Filters</Button>) }
                 </div>
                 
                 {isLoading ? <div className="flex justify-center items-center mt-60"><ClipLoader color="blue"/></div> : noProperties ? (
@@ -156,6 +192,8 @@ const PropertiesList = () => {
                             ))}
                         </div>
                     )}
+
+                {isFilterOffcanvas && <PropertyFilters setIsFilterOffCanvas= {setIsFilterOffCanvas} handleFilter={handleFilterData}/>}
                     
             </PanelLayout>
         </>
