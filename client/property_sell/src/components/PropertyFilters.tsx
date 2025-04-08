@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 import Button from "./Button";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { APP_URL } from "../app_url";
+import { APP_URL } from "../global_variables";
 import { useUser } from "../context/UserContext";
 
 interface PropertyFiltersProps {
