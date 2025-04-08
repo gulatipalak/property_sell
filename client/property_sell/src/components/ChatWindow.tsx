@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { APP_URL } from "../app_url";
+import { APP_URL } from "../global_variables";
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Button from "./Button";

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import ChatSidebar from "../../components/ChatSidebar";
 import ChatWindow from "../../components/ChatWindow";
 import PanelLayout from "../../layouts/PanelLayout";
-import { APP_URL } from "../../app_url";
+import { APP_URL } from "../../global_variables";
 import { toast } from "react-toastify";
 import axios from "axios";
 
