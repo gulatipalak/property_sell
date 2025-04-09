@@ -298,3 +298,44 @@ exports.updateProfile = async (req,res) => {
       return res.status(500).json({status: false, code: 500, meassage: "Internal Server Error"});
     }
 }
+
+exports.saveDeviceToken = async (req, res) => {
+  try {
+    const userId = req.user.id; // assuming middleware adds user to req
+    const { deviceToken } = req.body;
+
+    if (!deviceToken) {
+      return res.status(400).json({ message: "Device token is required" });
+    }
+
+    const user = await userModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Avoid duplicate tokens
+    if (!user.device_token.includes(deviceToken)) {
+      user.device_token.push(deviceToken);
+      await user.save();
+    }
+
+    return res.status(200).json({ message: "Device token saved successfully" });
+  } catch (error) {
+    console.error("Error saving device token:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+exports.removeDeviceToken = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    await userModel.findByIdAndUpdate(userId, { device_token: [] });
+
+    return res.status(200).json({ message: "Device token removed successfully" });
+  } catch (error) {
+    console.error("Error removing device token:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};

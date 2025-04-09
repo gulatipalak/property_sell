@@ -35,6 +35,10 @@ const userSchema = new mongoose.Schema({
         type:String,
         enum:["tenant","landlord"],
         required: true
+    },
+    device_token: {
+        type:[String],
+        default: []
     }
 });
 

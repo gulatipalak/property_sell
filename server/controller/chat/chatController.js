@@ -3,6 +3,7 @@ const userModel = require("../../model/user/authModel")
 const messageModel = require("../../model/chat/messageModel")
 const {getReceiverSocketId ,io} = require("../../lib/socket");
 const chatModel = require("../../model/chat/chatModel");
+const { sendNotification } = require("../../utils/sendNotifications");
 
 exports.chatUsers = async (req, res) => {
   try {
@@ -107,6 +108,7 @@ exports.sendMessage = async(req,res) => {
 
     await newMessage.save();
 
+    await sendNotification(receiverId,"New Message",text,senderId,"chat");
     
     const latestMessage = await chatModel.findByIdAndUpdate(chatId,{$set: {latestMessage: newMessage._id}});
 
