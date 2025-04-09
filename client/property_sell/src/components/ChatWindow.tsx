@@ -91,27 +91,30 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
         if (selectedUser?._id) {
             fetchMessages();
             socket?.on("newMessage", (newMessage) => {
+                console.log("newMessage");
                 if (newMessage.senderId === selectedUser?._id) {
                     // ✅ Update the chat only if the sender matches the currently selected user
                     setMessages((prevMessages) => [...prevMessages, newMessage]);
                 }
             });
             socket?.on("typing", (typingUserId,typingUsername) => {
+                console.log("typing");
                 if(typingUserId === selectedUser?._id){
                     setIsTyping(`${typingUsername} is typing...`);
                 }
             })
             socket?.on("stopped-typing",(typingUserId) => {
+                console.log("stopped-typing");
                 if(typingUserId === selectedUser?._id){
                 setIsTyping("");
                 }
             });
-            socket?.on("read-marked", (readerId) => {
-                    console.log("readerId",readerId);
-                    if(readerId === selectedUser?._id) {
-                        fetchMessages();
-                    }
-            });
+            // socket?.on("read-marked", (readerId) => {
+            //     console.log("readerId",readerId);
+            //     if(readerId === selectedUser?._id) {
+            //         fetchMessages();
+            //     }
+            // });
         }
         return () => {
             socket?.off("newMessage");
@@ -119,13 +122,14 @@ const ChatWindow = ({ selectedUser }: ChatWindowProps) => {
             socket?.off("messages-read");
             socket?.off("read-marked");
         };
-    }, [selectedUser?._id,socket]);
+    }, [selectedUser?._id]);
 
     useEffect(()=>{
         if(chatWindowRef.current){
             chatWindowRef.current.scrollTop = chatWindowRef.current.scrollHeight;
         }
     },[messages,isTyping]);
+
 
     return (
         <div className="flex flex-col flex-1">

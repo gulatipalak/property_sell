@@ -13,6 +13,7 @@ import PropertiesList from "./pages/dashboard/PropertiesList";
 import Unauthorized from "./pages/Unauthorized";
 import ChatModule from "./pages/dashboard/ChatModule";
 import MyAccount from "./pages/dashboard/MyAccount";
+import "./firebase"
 
 function App() {
   return (

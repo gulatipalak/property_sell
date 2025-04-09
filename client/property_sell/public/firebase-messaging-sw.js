@@ -3,13 +3,13 @@ importScripts("https://www.gstatic.com/firebasejs/10.8.1/firebase-messaging-comp
 
 // Firebase Config
 const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+    apiKey: "AIzaSyAx5N36CvBQRDAoDxB6MbSB9gc_s7EjhPg",
+    authDomain: "property-bazaar-f0381.firebaseapp.com",
+    projectId: "property-bazaar-f0381",
+    storageBucket: "property-bazaar-f0381.appspot.com",
+    messagingSenderId: "764139207835",
+    appId: "1:764139207835:web:9cda8b0345412fabc51a3e",
+    measurementId: "G-99DTZRJG15",
   };
 
 // Initialize Firebase

@@ -1,13 +1,27 @@
 import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
-import { default_profile_photo } from "../global_variables";
+import { APP_URL, default_profile_photo } from "../global_variables";
+import axios from "axios";
 
 const Header = () => {
     const { user, setUser } = useUser();
     const navigate = useNavigate();
+    const {token} = useUser();
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+
+        if (token) {
+            try {
+              await axios.post(`${APP_URL}/api/v1/user/remove-device-token`, {}, {
+                headers: {
+                  Authorization: `Bearer ${token}`
+                }
+              });
+            } catch (error) {
+              console.error("Error removing device token:", error);
+            }
+          }
         sessionStorage.removeItem("token");
         toast.success("Logged out Successfully!");
         setUser(null);

@@ -56,7 +56,19 @@ const Login = () => {
         const response = await axios.post(`${APP_URL}/api/v1/user/login`,formData);
         sessionStorage.setItem("token",response.data.token);
         setUser(response.data.data);
-        requestNotificationPermission();
+        const deviceToken = await requestNotificationPermission();
+
+        if (deviceToken) {
+          await axios.post(`${APP_URL}/api/v1/user/save-device-token`, 
+            { deviceToken }, 
+            {
+              headers: {
+                Authorization: `Bearer ${response.data.token}`
+              }
+            }
+          );
+        }
+        
         navigate("/dashboard");
         setLoading(false);
       } catch (error: unknown) {

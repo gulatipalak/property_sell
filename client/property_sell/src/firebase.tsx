@@ -25,14 +25,14 @@ const requestNotificationPermission = async () => {
             console.log("Notification permission granted.");
 
             // Get FCM Token
-            const token = await getToken(messaging, {
+            const device_token = await getToken(messaging, {
                 vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY
             });
 
-            if (token) {
+            if (device_token) {
                 // console.log("FCM Token:", token);
-                localStorage.setItem("device_token", token);
-                return token;
+                localStorage.setItem("device_token", device_token);
+                return device_token;
             } else {
                 console.log("No registration token available.");
             }
@@ -45,12 +45,36 @@ const requestNotificationPermission = async () => {
 };
 
 // Handle Incoming Messages
+// onMessage(messaging, (payload) => {
+//     console.log("Message received: ", payload);
+//     // You can show notifications here
+// });
+
 onMessage(messaging, (payload) => {
     console.log("Message received: ", payload);
-    // You can show notifications here
-});
+  
+    const { title, body } = payload.notification || {};
+    const { senderName, notification_type } = payload.data || {};
+  
+    // Show the browser notification
+    if (Notification.permission === "granted") {
+      new Notification(title || "New Notification", {
+        body: body || `${senderName} sent you a ${notification_type}`,
+        icon: "/path/to/icon.png", // optional
+      });
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          new Notification(title || "New Notification", {
+            body: body || `${senderName} sent you a ${notification_type}`,
+            icon: "/path/to/icon.png", // optional
+          });
+        }
+      });
+    }
+  });
 
-// // Register Service Worker
+// Register Service Worker
 if ("serviceWorker" in navigator) {
     // console.log(navigator,"navigator")
     navigator.serviceWorker.register("/firebase-messaging-sw.js")
