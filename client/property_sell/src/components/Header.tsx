@@ -27,7 +27,7 @@ const Header = () => {
         setUser(null);
         setTimeout( () => {navigate("/login")},3000);
     }
-    console.log("profile_photo",user?.profile_photo);
+    // console.log("profile_photo",user?.profile_photo);
     return (
         <>
         <ToastContainer/>
