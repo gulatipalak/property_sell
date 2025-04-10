@@ -9,6 +9,7 @@ import { ClipLoader } from "react-spinners";
 import Button from "../../components/Button";
 import { useUser } from "../../context/UserContext";
 import PropertyFilters from "../../components/PropertyFilters";
+import { FiltersType } from "../../types";
 
 interface Property {
     _id: string;
@@ -28,25 +29,41 @@ interface Property {
     userId: string;
 }
 
-interface FiltersData {
-    location: string;
-    type: string;
-    bedrooms: string;
-    bathrooms: string;
-    area: number | "";
-    postingFor: string;
-    furnished: string[];
-    // price: number | "";
-  }
-
 const PropertiesList = () => {
     const  navigate = useNavigate();
+    const {user} = useUser();
     const [properties, setProperties] = useState<Property[]>([]);
     const [noProperties, setNoProperties] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isFilterOffcanvas, setIsFilterOffCanvas] = useState(false);
-
-    const fetchProperties = async(filterData?: FiltersData) => {
+    const [filterData, setFilterData] = useState<FiltersType>({
+        location: '',
+        type: '',
+        bedrooms: '',
+        bathrooms: '',
+        area: "" as number | "",
+        postingFor: '',
+        furnished: []
+        // price: 50000
+    });
+    const [appliedFilters, setAppliedFilters] = useState<FiltersType>({
+        location: "",
+        type: "",
+        bedrooms: "",
+        bathrooms: "",
+        area: "",
+        postingFor: "",
+        furnished: [],
+      });
+    // const getAppliedFilters = localStorage.getItem("property_filters");
+    // let FiltersObject = "";
+    // let FiltersArray: string[] = [];
+    // let restoreFilters;
+    
+    const fetchProperties = async(filterData?: FiltersType) => {
+        if (filterData) {
+            setAppliedFilters(filterData);
+          }
         // console.log("filter Properties",filterData);
         const queryParams = new URLSearchParams();
 
@@ -57,7 +74,7 @@ const PropertiesList = () => {
             }
         }
         // console.log(queryParams.toString(),"queryParams");
-        localStorage.setItem("property_filters",JSON.stringify(filterData)) 
+        // localStorage.setItem("property_filters",JSON.stringify(filterData)) 
 
         try {
             const token = sessionStorage.getItem("token");
@@ -92,9 +109,16 @@ const PropertiesList = () => {
 
     useEffect( () => {  
         fetchProperties();
-        return (()=> {
-            localStorage.removeItem("property_filters");
-        })
+        // Ensure it's not undefined or the literal string "undefined"
+        // if (getAppliedFilters && getAppliedFilters !== "undefined") {
+        //     restoreFilters = JSON.parse(getAppliedFilters);
+        // } else {
+        //     restoreFilters = filterData; // fallback
+        // }
+        // setFilterData(restoreFilters);
+        // return (()=> {
+        //     localStorage.removeItem("property_filters");
+        // })
     },[]); 
 
     const handleDelete = async (propertyId: string) => {
@@ -134,14 +158,39 @@ const PropertiesList = () => {
                 console.log("Deletion Canceled");
         }
     }
+    
+    // console.log("getAppliedFilters:",getAppliedFilters);
+   
+        // if (getAppliedFilters && getAppliedFilters !== "undefined" && getAppliedFilters !== "null") {
+        //     FiltersObject = JSON.parse(getAppliedFilters);
+        //     console.log("FiltersObject:", FiltersObject);
+        
+        //     FiltersArray= Object.entries(FiltersObject).flatMap(([key, value]) => {
+        //         if (Array.isArray(value) && value.length > 0) {
+        //         return value.map(v => `${capitalize(key)}: ${v}`);
+        //         } else if (value !== "") {
+        //         return `${capitalize(key)}: ${value}`;
+        //         } else {
+        //         return [];
+        //         }
+        //     });
+        //   console.log("filters:", FiltersArray);
+        // }
 
-    const handleFilterData = ((filterData: FiltersData) => {
-            // console.log("Filters Data", filterData);
-            fetchProperties(filterData);
-        }
-    )
+    // function capitalize(str:string) {
+    //     return str.charAt(0).toUpperCase() + str.slice(1);
+    // }
 
-    const {user} = useUser();
+    // const removeFilter = (key:keyof FiltersType,valueToRemove:string|number) => {
+    //     console.log("remove filter",key,valueToRemove);
+    //     setFilterData((prev: FiltersType) => {
+    //         const updated:FiltersType = {...prev};
+
+    //         if(Array.isArray(updated[key])) {
+    //             updated[key] = updated[key].filter((v)=> v!==valueToRemove)
+    //         }
+    //     })
+    // }
     return(
         <>
             <PanelLayout>
@@ -151,6 +200,35 @@ const PropertiesList = () => {
                     </h2>
                     {user?.role === "landlord" ? 
                     (<Button to="/properties/property/add">Add Property</Button>):(<Button className="w-auto!" onClick={()=>setIsFilterOffCanvas(true)}>Filters</Button>) }
+                </div>
+
+                {/* {FiltersArray.length > 0 && <div className="flex gap-2 items-center mb-4 flex-wrap">
+                    {FiltersArray.map((filter,idx) => {
+                    return (
+                        <div key={idx} className="flex gap-2 items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm shadow-sm">
+                            <span>{filter}</span>
+                            <button className="text-blue-500 hover:text-blue-700 font-bold" onClick={()=>{removeFilter()}}>
+                                &times;
+                            </button>
+                        </div>
+                    )
+                })}
+                </div>} */}
+                <div className="flex gap-2 items-center mb-4 flex-wrap">
+                {Object.entries(appliedFilters).filter(([ ,val]) => Array.isArray(val) ? val.length > 0 : val !=="" ).map(([key, val]) =>
+                Array.isArray(val) ? (
+                    val.map((v) => (
+                    <div key={key + v} className="flex gap-2 items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm shadow-sm">
+                        {key.charAt(0).toUpperCase()+ key.slice(1)}: {v}
+                        <button > &times;</button>
+                    </div>
+                    ))
+                ) : (
+                    <div key={key} className="flex gap-2 items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm shadow-sm">
+                    {key.charAt(0).toUpperCase()+ key.slice(1)}: {val} <button className="cursor-pointer" > &times;</button>
+                    </div>
+                )
+                )}
                 </div>
                 
                 {isLoading ? <div className="flex justify-center items-center mt-60"><ClipLoader color="blue"/></div> : noProperties ? (
@@ -193,8 +271,7 @@ const PropertiesList = () => {
                         </div>
                     )}
 
-                {isFilterOffcanvas && <PropertyFilters setIsFilterOffCanvas= {setIsFilterOffCanvas} handleFilter={handleFilterData}/>}
-                    
+                {isFilterOffcanvas && <PropertyFilters filters={filterData} setFilters={setFilterData} setIsFilterOffCanvas= {setIsFilterOffCanvas} applyFilters={fetchProperties}/>}
             </PanelLayout>
         </>
     )

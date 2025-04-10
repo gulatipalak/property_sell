@@ -40,7 +40,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
                 });
 
                 setUser(response.data.data);
-                console.log("Console get profile response: ",response.data.data);
+                // console.log("Console get profile response: ",response.data.data);
             } catch (error) {
                 console.error("Failed to fetch user data:", error);
             }
@@ -51,7 +51,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     
     useEffect(() => {
         // ✅ Establish WebSocket connection when user is logged in
-        // console.log("Console get profile 1: ",user);
         if (user) {
         
             const socket = io(APP_URL);
@@ -63,8 +62,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
             socket.emit("join", user._id);
 
             socket.on("user-login", () => {
-                console.log("Connected to WebSocket:", socket.id);
-                console.log("Connected to User id:", user._id, user.username);
+                // console.log("Connected to WebSocket:", socket.id);
+                // console.log("Connected to User id:", user._id, user.username);
             });
 
             return () => {
